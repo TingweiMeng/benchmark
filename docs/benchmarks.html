@@ -8,19 +8,27 @@
 </head>
 <body>
     <div id="header"></div>
-    <main>
-        <section>
-            <h2>Available Benchmarks</h2>
+    <main class="benchmarks-layout">
+        <aside class="sidebar">
+            <h3>Categories</h3>
             <ul>
-                <li><a href="hj_1d.html">HJ PDE</a></li>
-                <li><a href="optimal_control.html">Optimal Control</a></li>
-                <li><a href="ot.html">Optimal Transport</a></li>
-                <li><a href="mfc.html">Mean-Field Control</a></li>
-                <li><a href="jko.html">JKO / Wasserstein Gradient Flow</a></li>
+                <li><button onclick="showProblems('hj_pde')">HJ PDE</button></li>
+                <!-- Future categories -->
+                <!-- <li><button onclick="showProblems('optimal_control')">Optimal Control</button></li> -->
+                <!-- <li><button onclick="showProblems('ot')">Optimal Transport</button></li> -->
+                <!-- <li><button onclick="showProblems('mfc')">Mean-Field Control</button></li> -->
+                <!-- <li><button onclick="showProblems('jko')">JKO / Wasserstein Gradient Flow</button></li> -->
             </ul>
+        </aside>
+        <section class="content">
+            <h2>Available Benchmarks</h2>
+            <div id="problems-list">
+                <p>Select a category to view problems.</p>
+            </div>
         </section>
     </main>
     <div id="footer"></div>
     <script src="scripts/main.js"></script>
+    <script src="scripts/benchmarks.js"></script>
 </body>
 </html>
