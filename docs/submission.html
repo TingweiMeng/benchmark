@@ -11,10 +11,36 @@
     <main>
         <section>
             <h2>Submit Your Work</h2>
-            <p>Use this page to submit your benchmarks or algorithms for evaluation.</p>
+            <p>Use this form to submit your results, GitHub link, or code files for evaluation.</p>
+            <form id="submission-form">
+                <label for="submission-type">Submission Type:</label>
+                <select id="submission-type" name="submission-type" onchange="toggleSubmissionFields()">
+                    <option value="results">Results</option>
+                    <option value="github">GitHub Link</option>
+                    <option value="code">Code Files</option>
+                </select>
+
+                <div id="results-field" class="submission-field">
+                    <label for="results-file">Upload Results (CSV):</label>
+                    <input type="file" id="results-file" name="results-file" accept=".csv">
+                </div>
+
+                <div id="github-field" class="submission-field" style="display: none;">
+                    <label for="github-link">GitHub Repository Link:</label>
+                    <input type="url" id="github-link" name="github-link" placeholder="https://github.com/your-repo">
+                </div>
+
+                <div id="code-field" class="submission-field" style="display: none;">
+                    <label for="code-files">Upload Code Files (ZIP):</label>
+                    <input type="file" id="code-files" name="code-files" accept=".zip">
+                </div>
+
+                <button type="submit">Submit</button>
+            </form>
         </section>
     </main>
     <div id="footer"></div>
     <script src="scripts/main.js"></script>
+    <script src="scripts/submission.js"></script>
 </body>
 </html>
