@@ -1,0 +1,3 @@
+Solver,Error,Author,Description
+FD Baseline,0.1,John Doe,Finite difference baseline solver
+Solver X,0.2,Jane Smith,Experimental solver with custom parameters
