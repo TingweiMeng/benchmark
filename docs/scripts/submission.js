@@ -51,3 +51,48 @@ document.getElementById("submission-form").addEventListener("submit", function (
         }
     }
 });
+
+// Toggle visibility of benchmark submission fields
+function toggleBenchmarkFields() {
+    const benchmarkType = document.getElementById("benchmark-type").value;
+
+    // Get all benchmark fields
+    const githubField = document.getElementById("github-field");
+    const fileField = document.getElementById("file-field");
+
+    // Hide all fields initially
+    githubField.style.display = "none";
+    fileField.style.display = "none";
+
+    // Show the selected field
+    if (benchmarkType === "github") {
+        githubField.style.display = "block";
+    } else if (benchmarkType === "file") {
+        fileField.style.display = "block";
+    }
+}
+
+// Handle benchmark form submission
+document.getElementById("benchmark-form").addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const benchmarkName = document.getElementById("benchmark-name").value;
+    const benchmarkDescription = document.getElementById("benchmark-description").value;
+    const benchmarkType = document.getElementById("benchmark-type").value;
+
+    if (benchmarkType === "github") {
+        const githubLink = document.getElementById("github-link").value;
+        if (githubLink) {
+            alert(`Benchmark "${benchmarkName}" submitted successfully with GitHub link: ${githubLink}`);
+        } else {
+            alert("Please enter a GitHub repository link.");
+        }
+    } else if (benchmarkType === "file") {
+        const benchmarkFiles = document.getElementById("benchmark-files").files[0];
+        if (benchmarkFiles) {
+            alert(`Benchmark "${benchmarkName}" submitted successfully with file: ${benchmarkFiles.name}`);
+        } else {
+            alert("Please upload a file.");
+        }
+    }
+});

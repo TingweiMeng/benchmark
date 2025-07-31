@@ -37,6 +37,33 @@
 
                 <button type="submit">Submit</button>
             </form>
+
+            <h2>Submit a New Benchmark</h2>
+            <form id="benchmark-form">
+                <label for="benchmark-name">Benchmark Name:</label>
+                <input type="text" id="benchmark-name" name="benchmark-name" placeholder="Enter benchmark name" required>
+
+                <label for="benchmark-description">Description:</label>
+                <textarea id="benchmark-description" name="benchmark-description" placeholder="Enter benchmark description" rows="4" required></textarea>
+
+                <label for="benchmark-type">Submission Type:</label>
+                <select id="benchmark-type" name="benchmark-type" onchange="toggleBenchmarkFields()">
+                    <option value="github">GitHub Link</option>
+                    <option value="file">Upload Files</option>
+                </select>
+
+                <div id="github-field" class="benchmark-field">
+                    <label for="github-link">GitHub Repository Link:</label>
+                    <input type="url" id="github-link" name="github-link" placeholder="https://github.com/your-repo">
+                </div>
+
+                <div id="file-field" class="benchmark-field" style="display: none;">
+                    <label for="benchmark-files">Upload Files (ZIP):</label>
+                    <input type="file" id="benchmark-files" name="benchmark-files" accept=".zip">
+                </div>
+
+                <button type="submit">Submit Benchmark</button>
+            </form>
         </section>
     </main>
     <div id="footer"></div>

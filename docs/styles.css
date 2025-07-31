@@ -27,6 +27,7 @@ nav a:hover {
 
 main {
     padding: 20px;
+    padding-bottom: 50px; /* Ensure enough space between content and footer */
 }
 
 footer {
@@ -117,6 +118,7 @@ form {
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #f9f9f9;
+    margin-bottom: 50px; /* Add space below the form */
 }
 
 form label {
@@ -125,13 +127,17 @@ form label {
     font-weight: bold;
 }
 
-form input, form select, form button {
+form input, form select, form textarea, form button {
     width: 100%;
     padding: 8px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 3px;
     font-size: 14px;
+}
+
+form textarea {
+    resize: vertical;
 }
 
 form button {
