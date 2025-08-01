@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Guide - HJ PDE Playground</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="header"></div>
+    <main>
+        <section>
+            <h2>User Guide</h2>
+            <p>Welcome to the HJ PDE Playground! This guide explains how to use the benchmarks, implement solvers, and submit your results.</p>
+
+            <h3>1. Getting Started with Benchmarks</h3>
+            <ol>
+                <li>Go to the <a href="benchmarks.html">Benchmarks</a> page</li>
+                <li>Browse the hierarchical structure: <strong>Topic → Class of Problems → Specific Cases</strong></li>
+                <li>Click on a collapsible section to view problem details</li>
+                <li>Download the benchmark code for the problem you're interested in</li>
+            </ol>
+
+            <h3>2. Understanding the Benchmark Structure</h3>
+            <p>Each benchmark includes:</p>
+            <ul>
+                <li><strong>benchmark_code.py</strong>: The benchmark implementation with Hamiltonian and initial conditions</li>
+                <li><strong>details.md</strong>: Problem description, references, and specific instructions</li>
+                <li><strong>test.py</strong>: Test script to evaluate your solver</li>
+            </ul>
+
+            <h3>3. Implementing Your Solver</h3>
+            <p>For each class of problems, you need to implement a solver function with a unified interface:</p>
+            <h4>For HJ PDEs:</h4>
+            <pre><code>def solve_HJB(Hamiltonian, initial_condition, x, t, additional_params):
+    """
+    Your solver implementation
+    
+    Args:
+        Hamiltonian: Function defining the Hamiltonian
+        initial_condition: Function defining the initial condition
+        x: Spatial grid points
+        t: Time grid points
+        additional_params: Problem-specific parameters (e.g., viscosity)
+    
+    Returns:
+        u: Solution array or callable function
+    """
+    # Your implementation here
+    return u</code></pre>
+
+            <h3>4. Running the Test Script</h3>
+            <ol>
+                <li>Save your solver in a file (e.g., <code>my_solver.py</code>)</li>
+                <li>Import your solver in the test script</li>
+                <li>Run the test script:
+                    <pre><code>python test.py</code></pre>
+                </li>
+                <li>The script will output error metrics and performance measures</li>
+            </ol>
+
+            <h3>5. Submitting Your Results</h3>
+            <p>You can submit your results in two ways:</p>
+            
+            <h4>Option 1: Direct Upload</h4>
+            <ol>
+                <li>Go to the <a href="submission.html">Submit</a> page</li>
+                <li>Select "Results" as submission type</li>
+                <li>Upload your results file (CSV format)</li>
+                <li>Fill in additional information (author, description, etc.)</li>
+            </ol>
+
+            <h4>Option 2: GitHub Repository</h4>
+            <ol>
+                <li>Create a GitHub repository with your solver implementation</li>
+                <li>Include the test script in your repository</li>
+                <li>Go to the <a href="submission.html">Submit</a> page</li>
+                <li>Select "GitHub Link" as submission type</li>
+                <li>Provide your repository URL</li>
+                <li>Our system will use GitHub Actions to validate your submission</li>
+            </ol>
+
+            <h3>6. Example Workflow: Burgers' Equation</h3>
+            <ol>
+                <li>Navigate to <strong>HJ PDE → Whole Domain → Burgers' Equation</strong></li>
+                <li>Download the benchmark code</li>
+                <li>Implement your solver:</li>
+            </ol>
+            <pre><code># my_solver.py
+import numpy as np
+
+def solve_HJB(Hamiltonian, initial_condition, x, t, nu):
+    # Your finite difference implementation
+    # ...
+    return u
+
+# In test.py, add:
+# from my_solver import solve_HJB</code></pre>
+            <ol start="4">
+                <li>Run: <code>python test.py</code></li>
+                <li>Submit your results or GitHub link</li>
+            </ol>
+
+            <h3>7. Tips and Best Practices</h3>
+            <ul>
+                <li><strong>Read the details.md file</strong> for each benchmark to understand specific requirements</li>
+                <li><strong>Test locally first</strong> before submitting to ensure your solver works correctly</li>
+                <li><strong>Include documentation</strong> in your code for better understanding</li>
+                <li><strong>Follow naming conventions</strong> specified in the benchmark interface</li>
+                <li><strong>Check error handling</strong> in your solver for edge cases</li>
+            </ul>
+
+            <h3>8. Getting Help</h3>
+            <p>If you need assistance:</p>
+            <ul>
+                <li>Check the benchmark-specific instructions in the <code>details.md</code> file</li>
+                <li>Visit our community forum for discussions</li>
+                <li>Submit an issue on our GitHub repository</li>
+            </ul>
+        </section>
+    </main>
+    <div id="footer"></div>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
