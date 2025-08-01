@@ -25,19 +25,29 @@ nav a:hover {
     text-decoration: underline;
 }
 
+/* Responsive navigation for smaller screens */
+/* @media (max-width: 768px) {
+  nav {
+      flex-direction: column;
+      gap: 10px;
+  }
+} */
+
 main {
     padding: 20px;
     padding-bottom: 50px; /* Ensure enough space between content and footer */
 }
 
 footer {
-    text-align: center;
-    padding: 10px;
-    background: #333;
-    color: #fff;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+  text-align: center;
+  padding: 5px;                    /* Reduced from 10px */
+  background: #333;
+  color: #fff;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: auto;                    /* Ensure it only takes needed height */
+  font-size: 14px;                /* Optional: slightly smaller font */
 }
 
 table {
