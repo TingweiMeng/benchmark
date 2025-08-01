@@ -22,31 +22,6 @@ const problems = {
     ],
 };
 
-// Function to display problems for a selected category
-function showProblems(category) {
-    const problemsList = document.getElementById("problems-list");
-    problemsList.innerHTML = ""; // Clear previous content
-
-    if (problems[category]) {
-        problems[category].forEach(problem => {
-            const problemDiv = document.createElement("div");
-            problemDiv.classList.add("problem");
-
-            const title = document.createElement("h3");
-            title.textContent = problem.title;
-
-            const description = document.createElement("p");
-            description.textContent = problem.description;
-
-            problemDiv.appendChild(title);
-            problemDiv.appendChild(description);
-            problemsList.appendChild(problemDiv);
-        });
-    } else {
-        problemsList.innerHTML = "<p>No problems available for this category.</p>";
-    }
-}
-
 
 // Toggle collapsible panels
 document.addEventListener("DOMContentLoaded", function () {
@@ -69,6 +44,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 });
+
+// Show problems based on category
+// ...existing code...
 
 // Show problems based on category
 function showProblems(category) {
@@ -97,8 +75,57 @@ function showProblems(category) {
                               <p><strong>Boundary Conditions:</strong> Periodic boundary conditions</p>
                               
                               <div class="benchmark-links">
-                                  <a href="../benchmarks/HJB/HJB_wholedomain/burgers_details.md" target="_blank">📖 View Full Details</a>
+                                  <button class="details-btn" onclick="toggleDetails('burgers')">📖 View Full Details</button>
                                   <button class="download-btn" onclick="downloadBenchmark('burgers')">💾 Download Benchmark Code</button>
+                              </div>
+                              
+                              <!-- Details Panel -->
+                              <div id="burgers-details" class="details-panel" style="display: none;">
+                                  <div class="details-content">
+                                      <h4>📖 Burgers' Equation - Full Details</h4>
+                                      <div class="details-section">
+                                          <h5>Problem Overview</h5>
+                                          <p>The Burgers' equation is a simplified form of the Navier-Stokes equations that captures the essential nonlinear dynamics while remaining analytically tractable. It serves as an important test case for numerical methods.</p>
+                                      </div>
+                                      
+                                      <div class="details-section">
+                                          <h5>Mathematical Formulation</h5>
+                                          <p><strong>PDE:</strong></p>
+                                          <pre>∂u/∂t + u ∂u/∂x = ν ∂²u/∂x²</pre>
+                                          <p>where:</p>
+                                          <ul>
+                                              <li>u(x,t) is the velocity field</li>
+                                              <li>ν is the kinematic viscosity</li>
+                                              <li>x ∈ [0, 1] is the spatial domain</li>
+                                              <li>t > 0 is time</li>
+                                          </ul>
+                                      </div>
+                                      
+                                      <div class="details-section">
+                                          <h5>Initial and Boundary Conditions</h5>
+                                          <p><strong>Initial Condition:</strong></p>
+                                          <pre>u(x, 0) = -sin(πx), x ∈ [0, 1]</pre>
+                                          <p><strong>Boundary Conditions:</strong> Periodic boundary conditions</p>
+                                          <pre>u(0, t) = u(1, t)
+∂u/∂x|_{x=0} = ∂u/∂x|_{x=1}</pre>
+                                      </div>
+                                      
+                                      <div class="details-section">
+                                          <h5>Numerical Parameters</h5>
+                                          <ul>
+                                              <li>Viscosity: ν = 0.01</li>
+                                              <li>Domain: x ∈ [0, 1]</li>
+                                              <li>Time interval: t ∈ [0, 1]</li>
+                                              <li>Grid points: 256</li>
+                                              <li>Time steps: 1000</li>
+                                          </ul>
+                                      </div>
+                                      
+                                      <div class="details-section">
+                                          <h5>Expected Behavior</h5>
+                                          <p>The solution exhibits shock formation due to the nonlinear convection term, followed by viscous smoothing. The initial sinusoidal profile steepens and eventually develops into a smooth traveling wave.</p>
+                                      </div>
+                                  </div>
                               </div>
                           </div>
                       </div>
@@ -182,7 +209,7 @@ function initializeCollapsibles() {
 // Download benchmark code
 function downloadBenchmark(problem) {
   const downloadLinks = {
-      burgers: "../benchmarks/HJB/HJB_wholedomain/burgers.py",
+      burgers: "../../benchmarks/HJB/HJB_wholedomain/burgers_benchmark.py",
       // Add more benchmarks here as they become available
   };
 
@@ -199,16 +226,17 @@ function downloadBenchmark(problem) {
   }
 }
 
-// View benchmark details
-function viewDetails(problem) {
-  const detailsLinks = {
-      burgers: "../benchmarks/HJB/HJB_wholedomain/burgers_details.md",
-      // Add more detail links here
-  };
+// Toggle details panel
+function toggleDetails(problem) {
+  const detailsPanel = document.getElementById(`${problem}-details`);
+  const button = event.target;
   
-  if (detailsLinks[problem]) {
-      window.open(detailsLinks[problem], '_blank');
+  if (detailsPanel.style.display === 'none') {
+      detailsPanel.style.display = 'block';
+      button.textContent = '📖 Hide Details';
+      detailsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } else {
-      alert("Details not available yet.");
+      detailsPanel.style.display = 'none';
+      button.textContent = '📖 View Full Details';
   }
 }

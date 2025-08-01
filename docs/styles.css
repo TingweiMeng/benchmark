@@ -267,3 +267,45 @@ form button:hover {
 .benchmark-links a:hover {
     text-decoration: underline;
 }
+
+
+.details-panel {
+  margin-top: 15px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #007bff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.details-content {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.details-section {
+  margin-bottom: 20px;
+}
+
+.details-section h5 {
+  color: #007bff;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+.details-section pre {
+  background-color: #f1f3f4;
+  padding: 10px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  overflow-x: auto;
+}
+
+.details-section ul {
+  margin-left: 20px;
+}
+
+.details-btn, .download-btn {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
