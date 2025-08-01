@@ -12,9 +12,8 @@ benchmark/
 ├── benchmarks/                           # Benchmark definitions and test scripts
 │   ├── <topic>/                          # Topic-level folder (e.g., HJ PDE, Optimal Control)
 │   │   ├── <class_of_problems>/          # Class of problems (e.g., periodic BC, unbounded domain)
-│   │   │   ├── benchmark_code.py         # Benchmark implementation
+│   │   │   ├── benchmark_code.py         # Combined benchmark implementation and test script
 │   │   │   ├── details.md                # Problem description and references
-│   │   │   ├── test.py                   # Test script for the benchmark
 ├── docs/                                 # Static HTML files for the platform
 │   ├── index.html                        # Main dashboard
 │   ├── benchmarks.html                   # Benchmarks page
@@ -45,31 +44,25 @@ benchmark/
     - **Classes of Problems**: Subcategories within each topic (e.g., HJ PDE with unbounded domain, periodic BC, Dirichlet BC).
     - **Specific Cases**: Individual problems (e.g., Burgers' equation).
   - Each specific case will include:
-    - A **description** of the problem.
-    - **References** to relevant papers or resources.
-    - A **download button** for the benchmark code.
-    - These details will be hidden in a **collapsible menu** (下拉菜单) for better organization.
+    - **benchmark_code.py**: Combined file containing:
+      - Problem definition (Hamiltonian, initial conditions)
+      - Reference solution implementation
+      - Test script for evaluating user solutions
+    - **details.md**: Problem description, references, and usage instructions
+    - These details will be hidden in a **collapsible penal** for better organization.
 
-- **Solver Interface**:
-  - For each class of problems, we will design a unified solver interface.
-  - Example for HJ PDEs:
-    - Users provide a function `solve_HJB(Hamiltonian, initial_condition)` that solves the problem.
-    - The solver can either:
-      - Return function values on grids (1D, 2D).
-      - Be a callable function that takes `(x, t)` as input and returns the solution at `(x, t)`.
-
-- **Test Script**:
-  - We will provide a test script for each class of problems.
-  - The test script will:
-    - Call the user's solver to solve predefined problems.
-    - Compare the user's solution to a reference solution using an error metric (e.g., \( L^2 \)-norm).
-    - Output the error and other performance metrics.
+- **Single File Design**:
+  - All benchmark-related code is contained in one downloadable Python file
+  - Users only need to download one file to get started
+  - The file includes:
+    - Problem definition functions
+    - Reference solution for comparison
+    - Test function that users can call with their solver
+    - Usage examples and documentation
 
 - **User Workflow**:
-  - Users download the benchmark code, which includes:
-    - Problem definitions.
-    - A test script.
-  - Users import their solver into the test script and:
+  - Users download the single benchmark_code.py file
+  - Users import their solver into the benchmark code and:
     - Run the script locally and upload the results.
     - Or provide a GitHub repository link with the test script in a specific location.
   - If a GitHub link is provided, we will use **GitHub Actions** to run the test script and validate the results.

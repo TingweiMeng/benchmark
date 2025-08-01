@@ -97,8 +97,8 @@ function showProblems(category) {
                               <p><strong>Boundary Conditions:</strong> Periodic boundary conditions</p>
                               
                               <div class="benchmark-links">
-                                  <a href="benchmarks/HJ/HJ_wholedomain/burgers_details.md" target="_blank">📖 View Full Details</a>
-                                  <a href="#" onclick="downloadBenchmark('burgers')">💾 Download Benchmark Code</a>
+                                  <a href="../../benchmarks/HJ/HJ_wholedomain/burgers_details.md" target="_blank">📖 View Full Details</a>
+                                  <button class="download-btn" onclick="downloadBenchmark('burgers')">💾 Download Benchmark Code</button>
                               </div>
                           </div>
                       </div>
@@ -132,6 +132,29 @@ function showProblems(category) {
       // Re-initialize collapsible functionality for new content
       initializeCollapsibles();
   }
+  
+  // Add other categories here
+  else if (category === 'optimal_control') {
+      problemsList.innerHTML = `
+          <div class="problem-category">
+              <p><em>Optimal Control benchmarks coming soon...</em></p>
+          </div>
+      `;
+  }
+  else if (category === 'optimal_transport') {
+      problemsList.innerHTML = `
+          <div class="problem-category">
+              <p><em>Optimal Transport benchmarks coming soon...</em></p>
+          </div>
+      `;
+  }
+  else if (category === 'mean_field') {
+      problemsList.innerHTML = `
+          <div class="problem-category">
+              <p><em>Mean Field Control benchmarks coming soon...</em></p>
+          </div>
+      `;
+  }
 }
 
 // Initialize collapsible functionality
@@ -159,13 +182,33 @@ function initializeCollapsibles() {
 // Download benchmark code
 function downloadBenchmark(problem) {
   const downloadLinks = {
-      burgers: "benchmarks/HJ/HJ_wholedomain/burgers_benchmark.py",
-      // Add more benchmarks here
+      burgers: "../../benchmarks/HJ/HJ_wholedomain/burgers.py",
+      // Add more benchmarks here as they become available
   };
 
   if (downloadLinks[problem]) {
-      window.location.href = downloadLinks[problem];
+      // Create a temporary link element to trigger download
+      const link = document.createElement('a');
+      link.href = downloadLinks[problem];
+      link.download = downloadLinks[problem].split('/').pop(); // Extract filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
   } else {
-      alert("Benchmark code not available yet.");
+      alert("Benchmark code not available yet. Please check back soon!");
+  }
+}
+
+// View benchmark details
+function viewDetails(problem) {
+  const detailsLinks = {
+      burgers: "../benchmarks/HJ/HJ_wholedomain/burgers_details.md",
+      // Add more detail links here
+  };
+  
+  if (detailsLinks[problem]) {
+      window.open(detailsLinks[problem], '_blank');
+  } else {
+      alert("Details not available yet.");
   }
 }

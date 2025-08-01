@@ -1,4 +1,5 @@
 import numpy as np
+from solver import solve_HJB
 
 def burgers_hamiltonian(p):
     """
@@ -66,3 +67,8 @@ def test_solver(solver):
     error = np.sqrt(np.sum((user_u - reference_u) ** 2) / np.sum(reference_u**2))
     print(f"L2 Error: {error}")
     return error
+
+
+if __name__ == "__main__":
+    # Run the test
+    test_solver(solve_HJB)
