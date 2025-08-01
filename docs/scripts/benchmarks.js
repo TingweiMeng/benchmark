@@ -1,8 +1,8 @@
 // Define problems for each category
 const problems = {
-    hj_pde: [
-        { title: "HJ PDE Problem 1", description: "Description of HJ PDE Problem 1" },
-        { title: "HJ PDE Problem 2", description: "Description of HJ PDE Problem 2" },
+    hjb_pde: [
+        { title: "HJB PDE Problem 1", description: "Description of HJB PDE Problem 1" },
+        { title: "HJB PDE Problem 2", description: "Description of HJB PDE Problem 2" },
     ],
     optimal_control: [
         { title: "Optimal Control Problem 1", description: "Description of Optimal Control Problem 1" },
@@ -77,14 +77,14 @@ function showProblems(category) {
   // Clear existing content
   problemsList.innerHTML = "";
   
-  if (category === 'hj_pde') {
+  if (category === 'hjb_pde') {
       problemsList.innerHTML = `
           <div class="problem-category">
-              <button class="collapsible">HJ PDE - Whole Domain</button>
+              <button class="collapsible">HJB PDE - Whole Domain</button>
               <div class="collapsible-content">
                   <div class="collapsible-inner">
                       <h4>Problems with Unbounded or Whole Domain</h4>
-                      <p>Hamilton-Jacobi equations solved on unbounded domains or the whole space.</p>
+                      <p>Hamilton-Jacobi-Bellman equations solved on unbounded domains or the whole space.</p>
                       
                       <!-- Burgers' Equation -->
                       <button class="collapsible">Burgers' Equation</button>
@@ -97,7 +97,7 @@ function showProblems(category) {
                               <p><strong>Boundary Conditions:</strong> Periodic boundary conditions</p>
                               
                               <div class="benchmark-links">
-                                  <a href="../../benchmarks/HJ/HJ_wholedomain/burgers_details.md" target="_blank">📖 View Full Details</a>
+                                  <a href="../benchmarks/HJB/HJB_wholedomain/burgers_details.md" target="_blank">📖 View Full Details</a>
                                   <button class="download-btn" onclick="downloadBenchmark('burgers')">💾 Download Benchmark Code</button>
                               </div>
                           </div>
@@ -107,22 +107,22 @@ function showProblems(category) {
           </div>
           
           <div class="problem-category">
-              <button class="collapsible">HJ PDE - Periodic Boundary Conditions</button>
+              <button class="collapsible">HJB PDE - Periodic Boundary Conditions</button>
               <div class="collapsible-content">
                   <div class="collapsible-inner">
                       <h4>Problems with Periodic Boundary Conditions</h4>
-                      <p>Hamilton-Jacobi equations with periodic boundary conditions.</p>
+                      <p>Hamilton-Jacobi-Bellman equations with periodic boundary conditions.</p>
                       <p><em>Benchmarks coming soon...</em></p>
                   </div>
               </div>
           </div>
           
           <div class="problem-category">
-              <button class="collapsible">HJ PDE - Dirichlet Boundary Conditions</button>
+              <button class="collapsible">HJB PDE - Dirichlet Boundary Conditions</button>
               <div class="collapsible-content">
                   <div class="collapsible-inner">
                       <h4>Problems with Dirichlet Boundary Conditions</h4>
-                      <p>Hamilton-Jacobi equations with Dirichlet boundary conditions.</p>
+                      <p>Hamilton-Jacobi-Bellman equations with Dirichlet boundary conditions.</p>
                       <p><em>Benchmarks coming soon...</em></p>
                   </div>
               </div>
@@ -182,7 +182,7 @@ function initializeCollapsibles() {
 // Download benchmark code
 function downloadBenchmark(problem) {
   const downloadLinks = {
-      burgers: "../../benchmarks/HJ/HJ_wholedomain/burgers.py",
+      burgers: "../benchmarks/HJB/HJB_wholedomain/burgers.py",
       // Add more benchmarks here as they become available
   };
 
@@ -202,7 +202,7 @@ function downloadBenchmark(problem) {
 // View benchmark details
 function viewDetails(problem) {
   const detailsLinks = {
-      burgers: "../benchmarks/HJ/HJ_wholedomain/burgers_details.md",
+      burgers: "../benchmarks/HJB/HJB_wholedomain/burgers_details.md",
       // Add more detail links here
   };
   

@@ -10,7 +10,7 @@ The platform will serve as a centralized hub for:
 ### 1.1. Directory Structure
 benchmark/
 ├── benchmarks/                           # Benchmark definitions and test scripts
-│   ├── <topic>/                          # Topic-level folder (e.g., HJ PDE, Optimal Control)
+│   ├── <topic>/                          # Topic-level folder (e.g., HJB PDE, Optimal Control)
 │   │   ├── <class_of_problems>/          # Class of problems (e.g., periodic BC, unbounded domain)
 │   │   │   ├── benchmark_code.py         # Combined benchmark implementation and test script
 │   │   │   ├── details.md                # Problem description and references
@@ -40,8 +40,8 @@ benchmark/
 ### 2.1. Benchmarks
 - **Structure**:
   - Benchmarks are organized hierarchically:
-    - **Topic**: High-level categories (e.g., HJ PDE, Optimal Control, OT, etc.).
-    - **Classes of Problems**: Subcategories within each topic (e.g., HJ PDE with unbounded domain, periodic BC, Dirichlet BC).
+    - **Topic**: High-level categories (e.g., HJB PDE, Optimal Control, OT, etc.).
+    - **Classes of Problems**: Subcategories within each topic (e.g., HJB PDE with unbounded domain, periodic BC, Dirichlet BC).
     - **Specific Cases**: Individual problems (e.g., Burgers' equation).
   - Each specific case will include:
     - **benchmark_code.py**: Combined file containing:
