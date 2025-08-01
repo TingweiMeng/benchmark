@@ -46,3 +46,17 @@ function showProblems(category) {
         problemsList.innerHTML = "<p>No problems available for this category.</p>";
     }
 }
+
+// Download benchmark code
+function downloadBenchmark(problem) {
+    const downloadLinks = {
+        burgers: "benchmarks/HJB/Burgers/burgers_benchmark.py",
+        // Add more benchmarks here
+    };
+
+    if (downloadLinks[problem]) {
+        window.location.href = downloadLinks[problem];
+    } else {
+        alert("Benchmark code not available.");
+    }
+}
