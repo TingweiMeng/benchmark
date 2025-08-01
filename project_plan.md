@@ -33,6 +33,8 @@ benchmark/
 │   ├── <topic>_<class>.csv               # Results for specific benchmarks
 ├── README.md                             # Project overview and quick start guide
 ├── project_plan.md                       # Detailed project plan and roadmap
+
+(To test the code locally, run "python3 -m http.server --directory . 8000 " and open http://localhost:8000 in your browser.)
 ---
 
 ## 2. Features
