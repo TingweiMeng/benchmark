@@ -14,16 +14,24 @@
             <ul>
                 <li><button onclick="showProblems('hj_pde')">HJ PDE</button></li>
                 <!-- Future categories -->
-                <!-- <li><button onclick="showProblems('optimal_control')">Optimal Control</button></li> -->
-                <!-- <li><button onclick="showProblems('ot')">Optimal Transport</button></li> -->
-                <!-- <li><button onclick="showProblems('mfc')">Mean-Field Control</button></li> -->
-                <!-- <li><button onclick="showProblems('jko')">JKO / Wasserstein Gradient Flow</button></li> -->
             </ul>
         </aside>
         <section class="content">
             <h2>Available Benchmarks</h2>
+            <p><strong>New to benchmarks?</strong> Visit the <a href="user_guide.html">User Guide</a> for detailed instructions on how to download, implement, and test your solutions.</p>
             <div id="problems-list">
-                <p>Select a category to view problems.</p>
+                <div class="problem">
+                    <button class="collapsible">Burgers' Equation</button>
+                    <div class="content">
+                        <p><strong>Description:</strong> The Burgers' equation is a fundamental PDE in fluid mechanics and nonlinear acoustics.</p>
+                        <p><strong>Equation:</strong></p>
+                        <pre>
+∂u/∂t + u ∂u/∂x = ν ∂²u/∂x²
+                        </pre>
+                        <p><strong>Details:</strong> <a href="benchmarks/HJB/Burgers/burgers_details.md" target="_blank">View Full Details</a></p>
+                        <button onclick="downloadBenchmark('burgers')">Download Benchmark Code</button>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
