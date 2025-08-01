@@ -7,77 +7,112 @@ The platform will serve as a centralized hub for:
 - Providing tools for users to contribute benchmarks and algorithms.
 - Visualizing results and fostering collaboration in the applied math community.
 
+### 1.1. Directory Structure
+benchmark/
+├── benchmarks/                           # Benchmark definitions and test scripts
+│   ├── <topic>/                          # Topic-level folder (e.g., HJ PDE, Optimal Control)
+│   │   ├── <class_of_problems>/          # Class of problems (e.g., periodic BC, unbounded domain)
+│   │   │   ├── benchmark_code.py         # Benchmark implementation
+│   │   │   ├── details.md                # Problem description and references
+│   │   │   ├── test.py                   # Test script for the benchmark
+├── docs/                                 # Static HTML files for the platform
+│   ├── index.html                        # Main dashboard
+│   ├── benchmarks.html                   # Benchmarks page
+│   ├── submission.html                   # Submission page
+│   ├── algorithms.html                   # Algorithms page
+│   ├── leaderboard.html                  # Leaderboard page (if applicable in the future)
+│   ├── header.html                       # Shared header component
+│   ├── footer.html                       # Shared footer component
+│   ├── user_guide.html                   # User guide page
+│   ├── scripts/                          # JavaScript files for interactivity
+│   │   ├── main.js                       # Shared JavaScript logic
+│   │   ├── benchmarks.js                 # JavaScript for benchmarks page
+│   │   ├── submission.js                 # JavaScript for submission page
+│   │   ├── algorithms.js                 # JavaScript for algorithms page
+│   ├── styles.css                        # Shared CSS for styling
+├── results/                              # User-submitted results (optional, for local testing)
+│   ├── <topic>_<class>.csv               # Results for specific benchmarks
+├── README.md                             # Project overview and quick start guide
+├── project_plan.md                       # Detailed project plan and roadmap
 ---
 
 ## 2. Features
 
 ### 2.1. Benchmarks
-- **List of Benchmarks**:
-  - Display benchmarks categorized by topics (e.g., HJ PDE, Optimal Control, OT, MFC, JKO/Wasserstein GF).
-  - Each benchmark will have:
-    - A description of the problem.
-    - A button to download the benchmark code (e.g., test functions, datasets).
-    - A visualization of the benchmark (e.g., problem setup, solution space).
-    - A link to the interface documentation for implementing solvers.
-  - Example topics:
-    - **HJ PDE**: Hamilton-Jacobi equations.
-    - **Optimal Control**: Control problems with constraints.
-    - **OT**: Optimal transport problems.
-    - **MFC**: Mean-field control problems.
-    - **JKO/Wasserstein GF**: Gradient flows in the Wasserstein space.
+- **Structure**:
+  - Benchmarks are organized hierarchically:
+    - **Topic**: High-level categories (e.g., HJ PDE, Optimal Control, OT, etc.).
+    - **Classes of Problems**: Subcategories within each topic (e.g., HJ PDE with unbounded domain, periodic BC, Dirichlet BC).
+    - **Specific Cases**: Individual problems (e.g., Burgers' equation).
+  - Each specific case will include:
+    - A **description** of the problem.
+    - **References** to relevant papers or resources.
+    - A **download button** for the benchmark code.
+    - These details will be hidden in a **collapsible menu** (下拉菜单) for better organization.
 
-- **Benchmark Submission**:
-  - Provide a button for users to upload their benchmark code.
-  - Include a form to submit:
-    - Benchmark name.
-    - Description.
-    - Code (or GitHub link).
-    - Reference paper (optional).
+- **Solver Interface**:
+  - For each class of problems, we will design a unified solver interface.
+  - Example for HJ PDEs:
+    - Users provide a function `solve_HJB(Hamiltonian, initial_condition)` that solves the problem.
+    - The solver can either:
+      - Return function values on grids (1D, 2D).
+      - Be a callable function that takes `(x, t)` as input and returns the solution at `(x, t)`.
+
+- **Test Script**:
+  - We will provide a test script for each class of problems.
+  - The test script will:
+    - Call the user's solver to solve predefined problems.
+    - Compare the user's solution to a reference solution using an error metric (e.g., \( L^2 \)-norm).
+    - Output the error and other performance metrics.
+
+- **User Workflow**:
+  - Users download the benchmark code, which includes:
+    - Problem definitions.
+    - A test script.
+  - Users import their solver into the test script and:
+    - Run the script locally and upload the results.
+    - Or provide a GitHub repository link with the test script in a specific location.
+  - If a GitHub link is provided, we will use **GitHub Actions** to run the test script and validate the results.
+  - The results will be stored in a database and displayed on the platform.
+  - Other things a user may provide: benchmark name, author, description, and references.
 
 ---
 
-### 2.2. Algorithms
-- **List of Algorithms**:
-  - Display a list of algorithms submitted by users or curated by the platform.
-  - Each algorithm will have:
-    - Name of the algorithm.
-    - Author(s).
-    - Description (e.g., method, hyperparameters).
-    - Link to the implementation (e.g., GitHub repo).
-    - Performance metrics (e.g., accuracy, runtime, memory usage).
+### 2.2. Visualization
+- **Structure**:
+  - The webpage will display benchmarks in a hierarchical structure:
+    - **Topic** → **Classes of Problems** → **Specific Cases**.
+  - For each specific case, the webpage will show:
+    - Problem description.
+    - References.
+    - A download button for the benchmark code.
+    - These details will be hidden in a **collapsible menu** (下拉菜单) for better organization.
 
-- **Algorithm Comparison**:
+- **Interactive Visualizations**:
+  - Use interactive plots (e.g., Plotly, Chart.js) to visualize:
+    - Problem setup.
+    - Solution space.
+    - Performance metrics.
+
+---
+
+### 2.3. Algorithms
+- **Submission**:
+  - Users can submit their algorithms via:
+    - A form to upload results (e.g., CSV file with metrics).
+    - A GitHub link to their implementation.
+  - Submissions will be validated using **GitHub Actions**:
+    - Clone the repository.
+    - Run the algorithm on predefined benchmarks.
+    - Log results and update the leaderboard.
+
+- **Comparison**:
   - Visualize algorithm performance on benchmarks using interactive plots:
     - Example: Dimension vs. Accuracy, Runtime vs. Accuracy.
   - Allow users to filter and sort algorithms by:
     - Benchmark.
     - Performance metrics.
     - Author.
-
-- **Algorithm Submission**:
-  - Provide a button for users to upload their algorithm results.
-  - Submission options:
-    - Upload results directly (e.g., CSV file with metrics).
-    - Submit a GitHub link to their implementation.
-  - Automate validation of submissions using GitHub Actions:
-    - Clone the repository.
-    - Run the algorithm on predefined benchmarks.
-    - Log results and update the leaderboard.
-
----
-
-### 2.3. Visualization
-- **Benchmark Visualization**:
-  - Use interactive plots (e.g., Plotly, Chart.js) to visualize:
-    - Problem setup.
-    - Solution space.
-    - Performance metrics.
-
-- **Algorithm Comparison Visualization**:
-  - Provide scatter plots, bar charts, and line plots for:
-    - Accuracy vs. Dimension.
-    - Runtime vs. Accuracy.
-    - Memory usage vs. Accuracy.
 
 ---
 
@@ -107,6 +142,26 @@ The platform will serve as a centralized hub for:
     - Algorithm submission guidelines.
     - Platform usage.
 
+### 2.6. User Guidance
+- **Primary Location**: `docs/user_guide.html`
+  - Comprehensive guide covering benchmark usage, solver implementation, and submission process
+  - Step-by-step instructions with examples
+  - Links to relevant resources and pages
+  - Accessible through the main navigation menu
+
+- **Navigation Integration**: 
+  - Added "User Guide" to the main navigation menu in `header.html`
+  - Available from any page on the platform for easy access
+
+- **Secondary Locations**: Contextual links from key pages
+  - `benchmarks.html`: Link to user guide for benchmark usage
+  - `submission.html`: Link to user guide for submission instructions
+
+- **Benchmark-Specific Guidance**: In individual `details.md` files
+  - Problem-specific instructions
+  - Solver interface requirements
+  - Testing and submission guidelines
+  
 ---
 
 ## 3. Technical Design
@@ -115,7 +170,7 @@ The platform will serve as a centralized hub for:
 - **Framework**: React or Vue.js for a dynamic and interactive user interface.
 - **Pages**:
   - Home Page: Overview of the platform and featured benchmarks/algorithms.
-  - Benchmarks Page: List of benchmarks categorized by topics.
+  - Benchmarks Page: Hierarchical structure for topics, classes of problems, and specific cases.
   - Algorithms Page: List of algorithms and their performance.
   - Submission Page: Forms for submitting benchmarks and algorithms.
   - Leaderboard Page: Interactive leaderboard for algorithm comparison.
