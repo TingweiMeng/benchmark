@@ -47,16 +47,125 @@ function showProblems(category) {
     }
 }
 
+
+// Toggle collapsible panels
+document.addEventListener("DOMContentLoaded", function () {
+  const collapsibles = document.querySelectorAll(".collapsible");
+  
+  collapsibles.forEach(function(collapsible) {
+      collapsible.addEventListener("click", function() {
+          // Toggle active class
+          this.classList.toggle("active");
+          
+          // Get the content panel
+          const content = this.nextElementSibling;
+          
+          // Toggle content visibility
+          if (content.classList.contains("active")) {
+              content.classList.remove("active");
+          } else {
+              content.classList.add("active");
+          }
+      });
+  });
+});
+
+// Show problems based on category
+function showProblems(category) {
+  const problemsList = document.getElementById("problems-list");
+  
+  // Clear existing content
+  problemsList.innerHTML = "";
+  
+  if (category === 'hj_pde') {
+      problemsList.innerHTML = `
+          <div class="problem-category">
+              <button class="collapsible">HJ PDE - Whole Domain</button>
+              <div class="collapsible-content">
+                  <div class="collapsible-inner">
+                      <h4>Problems with Unbounded or Whole Domain</h4>
+                      <p>Hamilton-Jacobi equations solved on unbounded domains or the whole space.</p>
+                      
+                      <!-- Burgers' Equation -->
+                      <button class="collapsible">Burgers' Equation</button>
+                      <div class="collapsible-content">
+                          <div class="collapsible-inner">
+                              <p><strong>Description:</strong> The Burgers' equation is a fundamental PDE in fluid mechanics and nonlinear acoustics.</p>
+                              <p><strong>Equation:</strong></p>
+                              <pre>∂u/∂t + u ∂u/∂x = ν ∂²u/∂x²</pre>
+                              <p><strong>Initial Condition:</strong> u(x, 0) = -sin(πx), x ∈ [0, 1]</p>
+                              <p><strong>Boundary Conditions:</strong> Periodic boundary conditions</p>
+                              
+                              <div class="benchmark-links">
+                                  <a href="benchmarks/HJ/HJ_wholedomain/burgers_details.md" target="_blank">📖 View Full Details</a>
+                                  <a href="#" onclick="downloadBenchmark('burgers')">💾 Download Benchmark Code</a>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="problem-category">
+              <button class="collapsible">HJ PDE - Periodic Boundary Conditions</button>
+              <div class="collapsible-content">
+                  <div class="collapsible-inner">
+                      <h4>Problems with Periodic Boundary Conditions</h4>
+                      <p>Hamilton-Jacobi equations with periodic boundary conditions.</p>
+                      <p><em>Benchmarks coming soon...</em></p>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="problem-category">
+              <button class="collapsible">HJ PDE - Dirichlet Boundary Conditions</button>
+              <div class="collapsible-content">
+                  <div class="collapsible-inner">
+                      <h4>Problems with Dirichlet Boundary Conditions</h4>
+                      <p>Hamilton-Jacobi equations with Dirichlet boundary conditions.</p>
+                      <p><em>Benchmarks coming soon...</em></p>
+                  </div>
+              </div>
+          </div>
+      `;
+      
+      // Re-initialize collapsible functionality for new content
+      initializeCollapsibles();
+  }
+}
+
+// Initialize collapsible functionality
+function initializeCollapsibles() {
+  const collapsibles = document.querySelectorAll(".collapsible");
+  
+  collapsibles.forEach(function(collapsible) {
+      // Remove existing event listeners to avoid duplicates
+      collapsible.replaceWith(collapsible.cloneNode(true));
+  });
+  
+  // Re-add event listeners
+  const newCollapsibles = document.querySelectorAll(".collapsible");
+  newCollapsibles.forEach(function(collapsible) {
+      collapsible.addEventListener("click", function() {
+          this.classList.toggle("active");
+          const content = this.nextElementSibling;
+          if (content && content.classList.contains("collapsible-content")) {
+              content.classList.toggle("active");
+          }
+      });
+  });
+}
+
 // Download benchmark code
 function downloadBenchmark(problem) {
-    const downloadLinks = {
-        burgers: "benchmarks/HJB/Burgers/burgers_benchmark.py",
-        // Add more benchmarks here
-    };
+  const downloadLinks = {
+      burgers: "benchmarks/HJ/HJ_wholedomain/burgers_benchmark.py",
+      // Add more benchmarks here
+  };
 
-    if (downloadLinks[problem]) {
-        window.location.href = downloadLinks[problem];
-    } else {
-        alert("Benchmark code not available.");
-    }
+  if (downloadLinks[problem]) {
+      window.location.href = downloadLinks[problem];
+  } else {
+      alert("Benchmark code not available yet.");
+  }
 }
