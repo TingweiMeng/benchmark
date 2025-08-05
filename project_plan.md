@@ -243,9 +243,115 @@ benchmark/
 
 ---
 
-## 7. Next Steps
-1. Set up the project structure (frontend, backend, database).
-2. Implement the benchmark and algorithm submission workflows.
-3. Create a basic frontend for listing benchmarks and algorithms.
-4. Add GitHub Actions for automation.
-5. Deploy the platform and gather feedback.
+## 7. Working Progress and Next Steps
+
+### Working Progress
+- **7-30-2025**: Initial project setup and basic structure (code and webpage, algorithm submission workflows)
+- **8-1-2025**: Implemented the first benchmark (Burgers) for Hamilton-Jacobi-Bellman PDEs: the pipeline of benchmark and user_guide
+
+### Phase 1: Core Benchmark Platform (August 2025)
+**Target Completion: August 15, 2025**
+
+#### Week 1: Benchmark Content Expansion (8-3 to 8-8)
+- **8-4-2025**: 
+  - [ ] Add one more HJB PDE benchmarks (Eikonal equation)
+  - [ ] Test code upload functionality
+  - [ ] Create benchmark template structure for consistency
+
+- **8-5-2025**: 
+  - [ ] Add one optimal control benchmark (differential drive)
+
+- **8-8-2025**: 
+  - [ ] Improve benchmarks.html navigation and organization
+  - [ ] Add better descriptions and categorization
+  - [ ] Begin drafting questionnaire (don't send yet)
+
+#### Week 2: Platform Functionality (8-10 to 8-15)
+- **8-10-2025**: 
+  - [ ] Improve benchmarks.html with better navigation and search
+  - [ ] Add filtering by topic/category functionality
+  - [ ] Test download functionality for all benchmarks
+
+- **8-12-2025**: 
+  - [ ] Complete user guide with comprehensive examples
+  - [ ] Add benchmark usage tutorials and screenshots
+  - [ ] Create troubleshooting section in user guide
+
+- **8-15-2025**: 
+  - [ ] Deploy benchmark platform to GitHub Pages
+  - [ ] Test all core functionality end-to-end
+  - [ ] Create project README with clear setup instructions
+
+#### Week 3: Polish and Styling (8-17 to 8-22)
+- **8-17-2025**: 
+  - [ ] Complete CSS styling improvements for all pages
+  - [ ] Fix UI/UX issues with collapsible panels
+  - [ ] Add responsive design for mobile devices
+
+- **8-20-2025**: 
+  - [ ] Implement basic algorithm submission form structure
+  - [ ] Create algorithms.html page layout (without backend)
+  - [ ] Add form validation for future use
+
+- **8-22-2025**: 
+  - [ ] Final testing and bug fixes
+  - [ ] Create comprehensive documentation
+  - [ ] Prepare platform for initial user feedback
+
+### Phase 2: Content Expansion & Community (September 2025)
+**Target Completion: September 15, 2025**
+
+- **8-25-2025**: 
+  - [ ] Analyze questionnaire responses and prioritize benchmarks
+  - [ ] Add 3-4 new benchmarks based on researcher feedback
+  - [ ] Create standardized benchmark template
+
+- **9-1-2025**: 
+  - [ ] Add first Optimal Transport benchmark
+  - [ ] Add first Mean Field Control benchmark
+  - [ ] Implement benchmark categorization and tagging
+
+- **9-8-2025**: 
+  - [ ] Create benchmark submission workflow for researchers
+  - [ ] Add benchmark validation checklist
+  - [ ] Implement basic search and filter functionality
+
+- **9-15-2025**: 
+  - [ ] Launch beta version with 8-10 benchmarks across categories
+  - [ ] Send to initial group of researchers for feedback
+  - [ ] Create feedback collection system
+
+### Phase 3: Automation & Algorithm Integration (October 2025)
+**Target Completion: October 15, 2025**
+
+- **9-20-2025**: 
+  - [ ] Set up GitHub Actions for algorithm validation
+  - [ ] Create template repository for algorithm submissions
+  - [ ] Implement basic result storage system
+
+- **10-1-2025**: 
+  - [ ] Launch algorithm submission functionality
+  - [ ] Create basic leaderboard system
+  - [ ] Add algorithm comparison visualizations
+
+- **10-15-2025**: 
+  - [ ] Full platform launch with automation
+  - [ ] Community outreach and promotion
+  - [ ] Gather feedback for future improvements
+
+### Success Metrics by Phase
+- **Phase 1**: 5+ quality benchmarks, functional download system, positive initial feedback
+- **Phase 2**: 8-10 benchmarks, researcher engagement, standardized submission process  
+- **Phase 3**: Automated workflows, 5+ algorithm submissions, active community
+
+### Immediate Priorities (Next 2 Weeks)
+1. **Core benchmarks**: Focus on creating 4-5 high-quality, well-documented benchmarks
+2. **User experience**: Ensure smooth benchmark discovery and download process
+3. **Documentation**: Complete user guide with clear examples
+4. **Community**: Send questionnaire to gather more benchmark requirements
+
+### Dependencies & Risks
+- **Critical**: Researcher questionnaire responses for benchmark priorities
+- **Technical**: GitHub Pages deployment and file hosting
+- **Content**: Expert validation of benchmark implementations
+- **Timeline**: Buffer 20% extra time for each milestone
