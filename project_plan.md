@@ -227,6 +227,121 @@ benchmark/
 
 ---
 
+## 8. Benchmark Design Philosophy and Template Framework
+
+### 8.1 Hierarchical Structure
+
+Our benchmark platform follows a **four-level hierarchy** to organize problems systematically:
+
+```
+Level 1: HJB Category (e.g., HJB_wholedomain, HJB_periodic, HJB_dirichlet)
+    ↓
+Level 2: Problem Type (e.g., burgers, eikonal, allen_cahn)
+    ↓  
+Level 3: Specific Problem (e.g., burgers_sine_ic, burgers_gaussian_ic, burgers_shock_ic)
+    ↓
+Level 4: Test Cases (e.g., 1D_grid, 2D_grid, 3D_points, 5D_points, 10D_points)
+```
+
+**Example Full Path:** `HJB_wholedomain/burgers/burgers_sine_ic/[1D_grid, 2D_grid, 3D_points, ...]`
+
+### 8.2 Template Design Principles
+
+#### 8.2.1 Solver Interface Standardization
+All HJB benchmarks use the **same solver interface**:
+```python
+solve_HJB(hamiltonian, initial_condition, spatial_points, time_points, **params) -> solution
+```
+
+This allows:
+- **Consistent user experience** across all benchmarks
+- **Algorithm comparison** on the same interface
+- **Easy benchmark addition** with minimal learning curve
+
+#### 8.2.2 Multi-Dimensional and Multi-Domain Support
+Each benchmark tests algorithms across **multiple scenarios**:
+
+**Spatial Dimensions:**
+- 1D, 2D: Grid-based evaluation (traditional PDE solvers)
+- 3D+: Point-wise evaluation (high-dimensional methods)
+
+**Domain Types:**
+- `grid`: Structured grids for traditional finite difference/element methods
+- `points`: Arbitrary point clouds for meshless/ML methods
+
+**Rationale:** Different algorithms excel in different settings. A finite difference solver may be excellent on 2D grids but cannot handle arbitrary point clouds or high dimensions.
+
+#### 8.2.3 Comprehensive Testing Strategy
+Each benchmark provides **multiple test cases** to evaluate:
+
+1. **Accuracy**: L1, L2, L∞, and relative errors
+2. **Scalability**: Performance across dimensions 1D → 2D → 3D → 5D → 10D
+3. **Flexibility**: Grid-based vs point-based evaluation
+4. **Robustness**: Different initial conditions and parameters
+
+#### 8.2.4 Reference Solution Strategy
+- **Template**: Provides empty `reference_solution()` function
+- **Implementation**: Each specific problem implements high-accuracy reference
+- **Methods**: Analytical solutions when available, otherwise high-order numerical methods with fine grids
+- **No Timing Comparison**: Reference timing excluded from performance metrics (unfair comparison)
+
+### 8.3 Leaderboard Categorization
+
+Algorithms will be **categorized by capabilities** on the leaderboard:
+
+**Algorithm Categories:**
+- `Grid_1D`: Works only on 1D grids
+- `Grid_2D`: Works on 1D and 2D grids  
+- `Grid_ND`: Works on grids up to N dimensions
+- `Points_ND`: Works on arbitrary point sets up to N dimensions
+- `Universal`: Works on both grids and points, all tested dimensions
+
+**Display Strategy:**
+- Show algorithm performance only for **supported categories**
+- Clear **capability indicators** (✓ 1D Grid, ✓ 2D Grid, ✗ 3D Points, etc.)
+- **Separate rankings** for different capability classes
+
+### 8.4 Implementation Timeline
+
+#### Phase 1.1: Template Refinement (8-4 to 8-6)
+- [ ] Finalize template structure with hierarchical design
+- [ ] Implement flexible domain setup utilities
+- [ ] Create comprehensive error metrics framework
+- [ ] Test template with Burgers implementation
+
+#### Phase 1.2: Multi-Case Testing (8-6 to 8-8)
+- [ ] Implement all test cases for Burgers benchmark
+- [ ] Add visualization suite for different dimensions
+- [ ] Create scaling analysis tools
+- [ ] Validate reference solution accuracy
+
+#### Phase 1.3: Documentation and Examples (8-8 to 8-10)
+- [ ] Write comprehensive template documentation
+- [ ] Create step-by-step guide for new benchmark creation
+- [ ] Document the hierarchical structure
+- [ ] Provide algorithm interface examples
+
+### 8.5 Quality Assurance
+
+**Template Validation:**
+- Every new benchmark must pass **template compliance check**
+- Standard error metrics and visualization requirements
+- Consistent interface and documentation format
+
+**Reference Solution Validation:**
+- Cross-validation with analytical solutions when available
+- Convergence testing with grid refinement
+- Comparison with literature results when possible
+
+**Algorithm Categorization:**
+- Automatic detection of algorithm capabilities based on test results
+- Clear capability documentation for users
+- Performance tracking across different scenarios
+
+This framework ensures **scalability**, **consistency**, and **comprehensive evaluation** while accommodating the diverse landscape of HJB PDE solvers.
+
+---
+
 ## 5. Future Enhancements
 - Add more benchmarks and algorithms.
 - Integrate with platforms like Kaggle for competitions.
