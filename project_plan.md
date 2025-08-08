@@ -81,7 +81,7 @@ benchmark/
     - Problem description.
     - References.
     - A download button for the benchmark code.
-    - These details will be hidden in a **collapsible menu** (下拉菜单) for better organization.
+    - These details will be hidden in a **collapsible panel** for better organization.
 
 - **Interactive Visualizations**:
   - Use interactive plots (e.g., Plotly, Chart.js) to visualize:
@@ -225,11 +225,15 @@ benchmark/
    - Encourage discussions and collaboration via forums.
    - Regularly update benchmarks and algorithms.
 
+6. **Future Enhancements**:
+   - Add more benchmarks and algorithms, beyond HJB PDEs.
+   - Add user authentication for personalized features (e.g., saved submissions, notifications).
+
 ---
 
-## 8. Benchmark Design Philosophy and Template Framework
+## 5. Benchmark Design Philosophy and Template Framework
 
-### 8.1 Hierarchical Structure
+### 5.1 Hierarchical Structure
 
 Our benchmark platform follows a **four-level hierarchy** to organize problems systematically:
 
@@ -245,9 +249,9 @@ Level 4: Test Cases (e.g., 1D_grid, 2D_grid, 3D_points, 5D_points, 10D_points)
 
 **Example Full Path:** `HJB_wholedomain/burgers/burgers_sine_ic/[1D_grid, 2D_grid, 3D_points, ...]`
 
-### 8.2 Template Design Principles
+### 5.2 Template Design Principles
 
-#### 8.2.1 Solver Interface Standardization
+#### 5.2.1 Solver Interface Standardization
 All HJB benchmarks use the **same solver interface**:
 ```python
 solve_HJB(hamiltonian, initial_condition, spatial_points, time_points, **params) -> solution
@@ -258,70 +262,44 @@ This allows:
 - **Algorithm comparison** on the same interface
 - **Easy benchmark addition** with minimal learning curve
 
-#### 8.2.2 Multi-Dimensional and Multi-Domain Support
-Each benchmark tests algorithms across **multiple scenarios**:
+#### 5.2.2 Multi-Dimensional Support
+Each benchmark tests algorithms across **multiple dimensions**:
 
-**Spatial Dimensions:**
-- 1D, 2D: Grid-based evaluation (traditional PDE solvers)
-- 3D+: Point-wise evaluation (high-dimensional methods)
+**Different ways to generate spatial points:**
+- Grid: 1D, 2D only
+- Point-wise generation: suitable for any dimension
+- Domain is usually either rectangular or the whole domain
+- Benchmark is designed to generate data (points to compute for PDE cases) in certain way, which can be known by the user.
 
-**Domain Types:**
-- `grid`: Structured grids for traditional finite difference/element methods
-- `points`: Arbitrary point clouds for meshless/ML methods
-
-**Rationale:** Different algorithms excel in different settings. A finite difference solver may be excellent on 2D grids but cannot handle arbitrary point clouds or high dimensions.
-
-#### 8.2.3 Comprehensive Testing Strategy
+#### 5.2.3 Comprehensive Testing Strategy
 Each benchmark provides **multiple test cases** to evaluate:
 
 1. **Accuracy**: L1, L2, L∞, and relative errors
 2. **Scalability**: Performance across dimensions 1D → 2D → 3D → 5D → 10D
-3. **Flexibility**: Grid-based vs point-based evaluation
-4. **Robustness**: Different initial conditions and parameters
+3. **Flexibility** and **Robustness**: How many benchmark cases can be run with the same code
 
-#### 8.2.4 Reference Solution Strategy
+#### 5.2.4 Reference Solution Strategy
 - **Template**: Provides empty `reference_solution()` function
 - **Implementation**: Each specific problem implements high-accuracy reference
 - **Methods**: Analytical solutions when available, otherwise high-order numerical methods with fine grids
 - **No Timing Comparison**: Reference timing excluded from performance metrics (unfair comparison)
+- **When no reference solution is available**: Compute error using equations in the problem setup, instead of comparing with a reference solution.
 
-### 8.3 Leaderboard Categorization
+### 5.3 Leaderboard Categorization
 
 Algorithms will be **categorized by capabilities** on the leaderboard:
 
 **Algorithm Categories:**
 - `Grid_1D`: Works only on 1D grids
-- `Grid_2D`: Works on 1D and 2D grids  
-- `Grid_ND`: Works on grids up to N dimensions
-- `Points_ND`: Works on arbitrary point sets up to N dimensions
-- `Universal`: Works on both grids and points, all tested dimensions
+- `Grid`: Works on 1D and 2D grids
+- `General`: Works on both grids and points, all tested dimensions
 
 **Display Strategy:**
 - Show algorithm performance only for **supported categories**
 - Clear **capability indicators** (✓ 1D Grid, ✓ 2D Grid, ✗ 3D Points, etc.)
-- **Separate rankings** for different capability classes
+- **Separate rankings** for different capability classes, and also provide an overall ranking
 
-### 8.4 Implementation Timeline
-
-#### Phase 1.1: Template Refinement (8-4 to 8-6)
-- [ ] Finalize template structure with hierarchical design
-- [ ] Implement flexible domain setup utilities
-- [ ] Create comprehensive error metrics framework
-- [ ] Test template with Burgers implementation
-
-#### Phase 1.2: Multi-Case Testing (8-6 to 8-8)
-- [ ] Implement all test cases for Burgers benchmark
-- [ ] Add visualization suite for different dimensions
-- [ ] Create scaling analysis tools
-- [ ] Validate reference solution accuracy
-
-#### Phase 1.3: Documentation and Examples (8-8 to 8-10)
-- [ ] Write comprehensive template documentation
-- [ ] Create step-by-step guide for new benchmark creation
-- [ ] Document the hierarchical structure
-- [ ] Provide algorithm interface examples
-
-### 8.5 Quality Assurance
+### 5.4 Quality Assurance
 
 **Template Validation:**
 - Every new benchmark must pass **template compliance check**
@@ -340,13 +318,6 @@ Algorithms will be **categorized by capabilities** on the leaderboard:
 
 This framework ensures **scalability**, **consistency**, and **comprehensive evaluation** while accommodating the diverse landscape of HJB PDE solvers.
 
----
-
-## 5. Future Enhancements
-- Add more benchmarks and algorithms.
-- Integrate with platforms like Kaggle for competitions.
-- Provide APIs for programmatic access to benchmark data.
-- Add user authentication for personalized features (e.g., saved submissions, notifications).
 
 ---
 
@@ -470,3 +441,25 @@ This framework ensures **scalability**, **consistency**, and **comprehensive eva
 - **Technical**: GitHub Pages deployment and file hosting
 - **Content**: Expert validation of benchmark implementations
 - **Timeline**: Buffer 20% extra time for each milestone
+
+
+
+### 5.4 Implementation Timeline
+
+#### Phase 1.1: Template Refinement (8-4 to 8-6)
+- [ ] Finalize template structure with hierarchical design
+- [ ] Implement flexible domain setup utilities
+- [ ] Create comprehensive error metrics framework
+- [ ] Test template with Burgers implementation
+
+#### Phase 1.2: Multi-Case Testing (8-6 to 8-8)
+- [ ] Implement all test cases for Burgers benchmark
+- [ ] Add visualization suite for different dimensions
+- [ ] Create scaling analysis tools
+- [ ] Validate reference solution accuracy
+
+#### Phase 1.3: Documentation and Examples (8-8 to 8-10)
+- [ ] Write comprehensive template documentation
+- [ ] Create step-by-step guide for new benchmark creation
+- [ ] Document the hierarchical structure
+- [ ] Provide algorithm interface examples

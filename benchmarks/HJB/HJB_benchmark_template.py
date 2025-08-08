@@ -4,19 +4,16 @@ HJB Benchmark Template - For Contributors
 Use this template to create new HJB benchmarks.
 
 Hierarchy: HJB Category -> Problem Type -> Specific Problem -> Test Cases
-Example: HJB_wholedomain -> burgers -> burgers_sine_ic -> (1D_grid, 2D_grid, 3D_points, ...)
+Example: HJB_wholedomain -> burgers -> burgers_sine_ic -> (1D, 2D, 3D, 5D, 10D)
 
 Required solver interface:
     solve_HJB(hamiltonian, initial_condition, spatial_points, time_points, **params) -> solution
-    
-    Solution format depends on domain_type:
-    - 'grid': Returns array with shape matching spatial_points and time_points
-    - 'points': Returns array with shape (n_points, n_times) or function callable
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+from benchmark_utils import *  # Import utility functions
 
 # ==========================================
 # USER SOLVER IMPORT
@@ -37,32 +34,29 @@ def hamiltonian(p, **params):
     Define your Hamiltonian H(p).
     
     Args:
-        p: Momentum/gradient variable (scalar or array)
-        **params: Additional problem-specific parameters
+        p: Momentum/gradient variable 
+        **params: Problem-specific parameters
     
     Returns:
-        float or array: H(p)
-    
-    Example for Burgers: return 0.5 * p**2
+        Hamiltonian value H(p)
     """
     # TODO: Implement your Hamiltonian
+    # Example: return 0.5 * np.sum(p**2, axis=-1) for Burgers
     raise NotImplementedError("Define your Hamiltonian function")
 
-def initial_condition(spatial_points, ic_type='default', **params):
+def initial_condition(spatial_points, **params):
     """
     Define your initial condition u(x, 0).
     
     Args:
         spatial_points: Spatial evaluation points
-        ic_type: Type of initial condition
-        **params: Additional parameters
+        **params: Additional parameters (ic_type, etc.)
     
     Returns:
-        array: u(x, 0) with appropriate shape
-    
-    Example for Burgers: return -np.sin(np.pi * spatial_points)
+        Initial condition values
     """
-    # TODO: Implement your initial condition(s)
+    # TODO: Implement your initial condition
+    # Example: return -np.sin(np.pi * spatial_points) for Burgers
     raise NotImplementedError("Define your initial condition")
 
 def reference_solution(spatial_points, time_points, **params):
@@ -75,132 +69,90 @@ def reference_solution(spatial_points, time_points, **params):
         **params: Problem-specific parameters
     
     Returns:
-        array: Reference solution with appropriate shape
-    
-    Note: Leave empty in template, implement case by case with high-accuracy methods
+        Reference solution for comparison
     """
     # TODO: Implement reference solution (analytical or high-accuracy numerical)
-    # This can be left empty in template and implemented per specific problem
     raise NotImplementedError("Provide reference solution for validation")
 
 # ==========================================
-# DOMAIN SETUP UTILITIES
+# TEST CONFIGURATION - CUSTOMIZE THESE
 # ==========================================
 
-def setup_spatial_domain(dimension, domain_type='grid', **params):
+def get_test_cases():
     """
-    Setup spatial domain for different dimensions and types.
+    Define test cases for your problem.
     
-    Args:
-        dimension: Spatial dimension (1, 2, 3, ...)
-        domain_type: 'grid' for structured grids, 'points' for arbitrary points
-        **params: Domain parameters (nx, ny, ranges, n_points, etc.)
+    Returns:
+        List of (dimension, test_params) tuples
     """
-    if domain_type == 'grid':
-        if dimension == 1:
-            nx = params.get('nx', 100)
-            x_range = params.get('x_range', (0, 1))
-            return np.linspace(x_range[0], x_range[1], nx)
-        
-        elif dimension == 2:
-            nx = params.get('nx', 50)
-            ny = params.get('ny', 50)
-            x_range = params.get('x_range', (0, 1))
-            y_range = params.get('y_range', (0, 1))
-            x = np.linspace(x_range[0], x_range[1], nx)
-            y = np.linspace(y_range[0], y_range[1], ny)
-            X, Y = np.meshgrid(x, y, indexing='ij')
-            return np.stack([X, Y], axis=-1)
-        
-        else:
-            raise NotImplementedError("Grid mode only supports 1D and 2D")
-    
-    elif domain_type == 'points':
-        n_points = params.get('n_points', 1000)
-        domain_bounds = params.get('domain_bounds', [(0, 1)] * dimension)
-        
-        np.random.seed(params.get('seed', 42))
-        points = np.random.uniform(
-            low=[b[0] for b in domain_bounds],
-            high=[b[1] for b in domain_bounds],
-            size=(n_points, dimension)
-        )
-        return points
-    
-    else:
-        raise ValueError(f"Unknown domain_type: {domain_type}")
+    # TODO: Define your test cases
+    return [
+        (1, {'nx': 100}),           # 1D with 100 points
+        (2, {'nx': 50, 'ny': 50}),  # 2D with 50x50 grid
+        (3, {'n_points': 1000}),    # 3D with 1000 random points
+        (5, {'n_points': 1000}),    # 5D with 1000 random points
+        (10, {'n_points': 1000}),   # 10D with 1000 random points
+    ]
 
-def compute_error_metrics(u_user, u_ref):
-    """Comprehensive error analysis."""
-    abs_error = np.abs(u_user - u_ref)
+def get_default_params():
+    """
+    Define default problem parameters.
     
-    # Basic metrics
-    l1_error = np.mean(abs_error)
-    l2_error = np.sqrt(np.mean(abs_error**2))
-    linf_error = np.max(abs_error)
-    
-    # Relative metrics
-    ref_norm = np.sqrt(np.mean(u_ref**2))
-    rel_l2_error = l2_error / ref_norm if ref_norm > 1e-12 else l2_error
-    
+    Returns:
+        Dict of default parameters
+    """
+    # TODO: Set your default parameters
     return {
-        'l1_error': l1_error,
-        'l2_error': l2_error,
-        'linf_error': linf_error,
-        'relative_l2': rel_l2_error
+        'time_final': 0.5,
+        'nt': 50,
+        # Add problem-specific parameters
     }
 
 # ==========================================
-# BENCHMARK RUNNER - FOLLOW THIS STRUCTURE
+# BENCHMARK RUNNER - STANDARD STRUCTURE
 # ==========================================
 
-def run_test_case(dimension, domain_type, test_params=None):
-    """
-    Run a single test case.
+def run_test_case(dimension, test_params):
+    """Run a single test case."""
+    print(f"\nTest Case: {dimension}D")
+    print("-" * 20)
     
-    Args:
-        dimension: Spatial dimension
-        domain_type: 'grid' or 'points'
-        test_params: Dict of test parameters
-    """
-    if test_params is None:
-        test_params = {}
+    # Merge with default parameters
+    params = {**get_default_params(), **test_params}
     
-    print(f"\nTest Case: {dimension}D, {domain_type} mode")
-    print("-" * 30)
+    # Setup spatial domain
+    spatial_points = setup_spatial_domain(dimension, **params)
+    time_points = setup_time_domain(**params)
     
-    # Setup domain
-    spatial_points = setup_spatial_domain(dimension, domain_type, **test_params)
-    time_points = np.linspace(0, 0.5, test_params.get('nt', 50))
-    
-    print(f"Spatial points: {spatial_points.shape if hasattr(spatial_points, 'shape') else len(spatial_points)}")
+    print(f"Spatial points: {get_points_info(spatial_points)}")
     print(f"Time points: {len(time_points)}")
     
     # Run user solver
     print("Running user solver...")
     user_start = time.time()
     try:
-        u_user = solve_HJB(hamiltonian, initial_condition, spatial_points, time_points, **test_params)
+        u_user = solve_HJB(hamiltonian, initial_condition, spatial_points, time_points, **params)
         user_time = time.time() - user_start
         
         # Compute reference solution
-        u_ref = reference_solution(spatial_points, time_points, **test_params)
+        print("Computing reference solution...")
+        u_ref = reference_solution(spatial_points, time_points, **params)
         
-        # Compute errors
+        # Validate and compute errors
+        validate_solution_shape(u_user, u_ref, spatial_points, time_points)
         errors = compute_error_metrics(u_user, u_ref)
         
         # Results
-        print(f"L1 Error: {errors['l1_error']:.2e}")
-        print(f"L2 Error: {errors['l2_error']:.2e}")
-        print(f"L∞ Error: {errors['linf_error']:.2e}")
-        print(f"Relative L2: {errors['relative_l2']:.2e}")
-        print(f"Solve time: {user_time:.4f}s")
+        print_results(errors, user_time)
         
         return {
             'dimension': dimension,
-            'domain_type': domain_type,
             'success': True,
             'user_time': user_time,
+            'spatial_points': spatial_points,
+            'time_points': time_points,
+            'solution_user': u_user,
+            'solution_ref': u_ref,
             **errors
         }
         
@@ -208,59 +160,42 @@ def run_test_case(dimension, domain_type, test_params=None):
         print(f"❌ Failed: {str(e)}")
         return {
             'dimension': dimension,
-            'domain_type': domain_type,
             'success': False,
             'error': str(e)
         }
 
 def run_benchmark():
-    """
-    Run comprehensive benchmark across multiple test cases.
-    """
+    """Run comprehensive benchmark across all test cases."""
     print("YOUR_PROBLEM_NAME Benchmark")
     print("=" * 40)
     
-    # TODO: Define your test cases
-    test_cases = [
-        (1, 'grid', {'nx': 100}),
-        (2, 'grid', {'nx': 50, 'ny': 50}),
-        (3, 'points', {'n_points': 1000}),
-        (5, 'points', {'n_points': 1000}),
-        (10, 'points', {'n_points': 1000}),
-    ]
-    
+    test_cases = get_test_cases()
     results = []
-    for dimension, domain_type, params in test_cases:
-        result = run_test_case(dimension, domain_type, params)
+    
+    for dimension, test_params in test_cases:
+        result = run_test_case(dimension, test_params)
         results.append(result)
     
-    # Summary
-    print(f"\n{'='*50}")
-    print("BENCHMARK SUMMARY")
-    print(f"{'='*50}")
-    print(f"{'Case':<15} {'Status':<10} {'L2 Error':<12} {'Time (s)':<10}")
-    print("-" * 50)
-    
-    for result in results:
-        case_name = f"{result['dimension']}D {result['domain_type']}"
-        status = "✓ PASS" if result['success'] else "❌ FAIL"
-        l2_error = f"{result.get('l2_error', 0):.2e}" if result['success'] else "N/A"
-        time_str = f"{result.get('user_time', 0):.4f}" if result['success'] else "N/A"
-        print(f"{case_name:<15} {status:<10} {l2_error:<12} {time_str:<10}")
-    
-    # TODO: Create visualization
-    create_visualization_suite(results)
+    # Print summary and create visualizations
+    print_benchmark_summary(results)
+    create_visualizations(results)
     
     return results
 
-def create_visualization_suite(results):
+def create_visualizations(results):
     """
-    Create visualization adapted to the problem and results.
-    TODO: Customize for your specific problem
+    Create problem-specific visualizations.
+    TODO: Customize for your problem
     """
-    # TODO: Implement problem-specific visualization
-    pass
+    successful_results = [r for r in results if r['success']]
+    
+    if not successful_results:
+        return
+    
+    # TODO: Implement your visualizations
+    # Use utility functions: plot_1d_results, plot_2d_results, plot_scaling_analysis
+    print("TODO: Implement problem-specific visualizations")
 
 if __name__ == "__main__":
     results = run_benchmark()
-    print(f"\nBenchmark completed! Results: {len([r for r in results if r['success']])}/{len(results)} passed")
+    save_results(results, 'your_problem_benchmark_results.json')
