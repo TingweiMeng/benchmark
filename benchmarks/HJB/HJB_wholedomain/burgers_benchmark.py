@@ -191,127 +191,90 @@ def reference_solution_multid(spatial_points, time_points, nu, **params):
 # uncomment
 
 # ==========================================
-# DOMAIN SETUP UTILITIES
+# TEST CONFIGURATION - CUSTOMIZE THESE
 # ==========================================
 
-def setup_spatial_domain(dimension, domain_type='grid', **params):
-    """Setup spatial domain for Burgers equation."""
-    if domain_type == 'grid':
-        if dimension == 1:
-            nx = params.get('nx', 100)
-            return np.linspace(0, 1, nx)
-        
-        elif dimension == 2:
-            nx = params.get('nx', 50)
-            ny = params.get('ny', 50)
-            x = np.linspace(0, 1, nx)
-            y = np.linspace(0, 1, ny)
-            X, Y = np.meshgrid(x, y, indexing='ij')
-            return np.stack([X, Y], axis=-1)
-        
-        else:
-            raise NotImplementedError("Grid mode only supports 1D and 2D for Burgers")
+def get_test_cases():
+    """
+    Define test cases for your problem.
     
-    elif domain_type == 'points':
-        n_points = params.get('n_points', 1000)
-        np.random.seed(params.get('seed', 42))
-        
-        # For Burgers, focus on [0,1] in first coordinate, [-1,1] in others
-        points = np.random.uniform(size=(n_points, dimension))
-        points[:, 0] = points[:, 0]  # [0,1] for x-coordinate
-        if dimension > 1:
-            points[:, 1:] = 2 * points[:, 1:] - 1  # [-1,1] for other coordinates
-        
-        return points
-    
-    else:
-        raise ValueError(f"Unknown domain_type: {domain_type}")
+    Returns:
+        List of (dimension, test_params) tuples
+    """
+    return [
+        # first non-viscous case
+        (1, {'nx': 100, 'nu': 0.0}),           # 1D with 100 points
+        (2, {'nx': 50, 'ny': 50, 'nu': 0.0}),  # 2D with 50x50 grid
+        (3, {'n_points': 1000, 'nu': 0.0}),    # 3D with 1000 random points
+        (5, {'n_points': 1000, 'nu': 0.0}),    # 5D with 1000 random points
+        (10, {'n_points': 1000, 'nu': 0.0}),   # 10D with 1000 random points
+        # then viscous case
+        (1, {'nx': 100, 'nu': 0.01}),           # 1D with 100 points
+        (2, {'nx': 50, 'ny': 50, 'nu': 0.01}),  # 2D with 50x50 grid
+        (3, {'n_points': 1000, 'nu': 0.01}),    # 3D with 1000 random points
+        (5, {'n_points': 1000, 'nu': 0.01}),    # 5D with 1000 random points
+        (10, {'n_points': 1000, 'nu': 0.01}),   # 10D with 1000 random points
+    ]
 
-def compute_error_metrics(u_user, u_ref):
-    """Comprehensive error analysis."""
-    abs_error = np.abs(u_user - u_ref)
+def get_default_params():
+    """
+    Define default problem parameters.
     
-    l1_error = np.mean(abs_error)
-    l2_error = np.sqrt(np.mean(abs_error**2))
-    linf_error = np.max(abs_error)
-    
-    ref_norm = np.sqrt(np.mean(u_ref**2))
-    rel_l2_error = l2_error / ref_norm if ref_norm > 1e-12 else l2_error
-    
+    Returns:
+        Dict of default parameters
+    """
+    # TODO: Set your default parameters
     return {
-        'l1_error': l1_error,
-        'l2_error': l2_error,
-        'linf_error': linf_error,
-        'relative_l2': rel_l2_error
+        'time_final': 0.5,
+        'nt': 50,
+        # Add problem-specific parameters
     }
 
 # ==========================================
-# BENCHMARK RUNNER
+# BENCHMARK RUNNER - STANDARD STRUCTURE
 # ==========================================
 
-def run_test_case(dimension, domain_type, test_params=None):
+def run_test_case(dimension, test_params):
     """Run a single test case."""
-    if test_params is None:
-        test_params = {'nu': 0.01}
+    print(f"\nTest Case: {dimension}D")
+    print("-" * 20)
     
-    print(f"\nTest Case: {dimension}D, {domain_type} mode")
-    print("-" * 30)
+    # Merge with default parameters
+    params = {**get_default_params(), **test_params}
     
-    # Setup domain
-    spatial_points = setup_spatial_domain(dimension, domain_type, **test_params)
-    time_points = np.linspace(0, 0.5, test_params.get('nt', 50))
+    # Setup spatial domain
+    spatial_points = setup_spatial_domain(dimension, **params)
+    time_points = setup_time_domain(**params)
     
-    if hasattr(spatial_points, 'shape'):
-        if spatial_points.ndim == 1:
-            print(f"Spatial points: {len(spatial_points)}")
-        else:
-            print(f"Spatial points: {spatial_points.shape}")
-    else:
-        print(f"Spatial points: {len(spatial_points)}")
+    print(f"Spatial points: {get_points_info(spatial_points)}")
     print(f"Time points: {len(time_points)}")
     
     # Run user solver
     print("Running user solver...")
     user_start = time.time()
     try:
-        u_user = solve_HJB(hamiltonian, initial_condition, spatial_points, time_points, **test_params)
+        u_user = solve_HJB(hamiltonian, initial_condition, spatial_points, time_points, **params)
         user_time = time.time() - user_start
         
         # Compute reference solution
         print("Computing reference solution...")
-        u_ref = reference_solution(spatial_points, time_points, **test_params)
+        u_ref = reference_solution(spatial_points, time_points, **params)
         
-        # Validate shapes
-        if u_user.shape != u_ref.shape:
-            raise ValueError(f"Shape mismatch: user {u_user.shape} vs reference {u_ref.shape}")
-        
-        # Compute errors
+        # Validate and compute errors
+        validate_solution_shape(u_user, u_ref, spatial_points, time_points)
         errors = compute_error_metrics(u_user, u_ref)
         
         # Results
-        print(f"L1 Error: {errors['l1_error']:.2e}")
-        print(f"L2 Error: {errors['l2_error']:.2e}")
-        print(f"L∞ Error: {errors['linf_error']:.2e}")
-        print(f"Relative L2: {errors['relative_l2']:.2e}")
-        print(f"Solve time: {user_time:.4f}s")
-        
-        # Performance assessment
-        if errors['l2_error'] < 1e-2:
-            print("✓ Excellent accuracy!")
-        elif errors['l2_error'] < 1e-1:
-            print("✓ Good accuracy")
-        else:
-            print("⚠ Consider improving accuracy")
+        print_results(errors, user_time)
         
         return {
             'dimension': dimension,
-            'domain_type': domain_type,
             'success': True,
             'user_time': user_time,
-            'solution_user': u_user,
-            'solution_ref': u_ref,
             'spatial_points': spatial_points,
             'time_points': time_points,
+            'solution_user': u_user,
+            'solution_ref': u_ref,
             **errors
         }
         
@@ -319,215 +282,42 @@ def run_test_case(dimension, domain_type, test_params=None):
         print(f"❌ Failed: {str(e)}")
         return {
             'dimension': dimension,
-            'domain_type': domain_type,
             'success': False,
             'error': str(e)
         }
 
 def run_benchmark():
-    """Run comprehensive Burgers benchmark."""
-    print("Burgers Equation Benchmark")
-    print("=" * 30)
-    print("Problem: ∂u/∂t + u ∂u/∂x = ν ∂²u/∂x²")
-    print("Initial: u(x,0) = -sin(πx)")
+    """Run comprehensive benchmark across all test cases."""
+    print(f"{YOUR_PROBLEM_NAME} Benchmark")
+    print("=" * 40)
     
-    # Define test cases
-    test_cases = [
-        (1, 'grid', {'nx': 100, 'nu': 0.01}),
-        (2, 'grid', {'nx': 50, 'ny': 50, 'nu': 0.01}),
-        (3, 'points', {'n_points': 1000, 'nu': 0.01}),
-        (5, 'points', {'n_points': 1000, 'nu': 0.01}),
-        (10, 'points', {'n_points': 1000, 'nu': 0.01}),
-    ]
-    
+    test_cases = get_test_cases()
     results = []
-    for dimension, domain_type, params in test_cases:
-        result = run_test_case(dimension, domain_type, params)
+    
+    for dimension, test_params in test_cases:
+        result = run_test_case(dimension, test_params)
         results.append(result)
     
-    # Summary
-    print(f"\n{'='*60}")
-    print("BENCHMARK SUMMARY")
-    print(f"{'='*60}")
-    print(f"{'Case':<15} {'Status':<10} {'L2 Error':<12} {'Time (s)':<10}")
-    print("-" * 60)
-    
-    for result in results:
-        case_name = f"{result['dimension']}D {result['domain_type']}"
-        status = "✓ PASS" if result['success'] else "❌ FAIL"
-        l2_error = f"{result.get('l2_error', 0):.2e}" if result['success'] else "N/A"
-        time_str = f"{result.get('user_time', 0):.4f}" if result['success'] else "N/A"
-        print(f"{case_name:<15} {status:<10} {l2_error:<12} {time_str:<10}")
-    
-    # Create visualizations
-    create_visualization_suite(results)
+    # Print summary and create visualizations
+    print_benchmark_summary(results)
+    create_visualizations(results)
     
     return results
 
-def create_visualization_suite(results):
-    """Create comprehensive visualizations."""
+def create_visualizations(results):
+    """
+    Create problem-specific visualizations.
+    TODO: Customize for your problem
+    """
     successful_results = [r for r in results if r['success']]
     
     if not successful_results:
-        print("No successful results to visualize.")
         return
     
-    # 1D visualization
-    result_1d = next((r for r in successful_results if r['dimension'] == 1), None)
-    if result_1d:
-        create_1d_visualization(result_1d)
-    
-    # 2D visualization  
-    result_2d = next((r for r in successful_results if r['dimension'] == 2), None)
-    if result_2d:
-        create_2d_visualization(result_2d)
-    
-    # Scaling analysis
-    create_scaling_analysis(successful_results)
-
-def create_1d_visualization(result):
-    """Create 1D-specific visualization."""
-    fig, axes = plt.subplots(2, 2, figsize=(12, 8))
-    
-    x = result['spatial_points']
-    t = result['time_points']
-    u_user = result['solution_user']
-    u_ref = result['solution_ref']
-    
-    # Space-time plot - User
-    im1 = axes[0,0].contourf(x, t, u_user.T, levels=20, cmap='viridis')
-    axes[0,0].set_title('User Solution')
-    axes[0,0].set_xlabel('x')
-    axes[0,0].set_ylabel('t')
-    plt.colorbar(im1, ax=axes[0,0])
-    
-    # Space-time plot - Reference
-    im2 = axes[0,1].contourf(x, t, u_ref.T, levels=20, cmap='viridis')
-    axes[0,1].set_title('Reference Solution')
-    axes[0,1].set_xlabel('x')
-    axes[0,1].set_ylabel('t')
-    plt.colorbar(im2, ax=axes[0,1])
-    
-    # Error
-    error = np.abs(u_user - u_ref)
-    im3 = axes[1,0].contourf(x, t, error.T, levels=20, cmap='hot')
-    axes[1,0].set_title(f'Absolute Error (max={np.max(error):.2e})')
-    axes[1,0].set_xlabel('x')
-    axes[1,0].set_ylabel('t')
-    plt.colorbar(im3, ax=axes[1,0])
-    
-    # Time evolution
-    time_indices = [0, len(t)//4, len(t)//2, 3*len(t)//4, -1]
-    for i, ti in enumerate(time_indices):
-        alpha = 0.5 + 0.5 * i / len(time_indices)
-        axes[1,1].plot(x, u_ref[:, ti], '-', alpha=alpha, label=f't={t[ti]:.2f}')
-        axes[1,1].plot(x, u_user[:, ti], '--', alpha=alpha)
-    
-    axes[1,1].set_xlabel('x')
-    axes[1,1].set_ylabel('u(x,t)')
-    axes[1,1].set_title('Time Evolution (solid=ref, dashed=user)')
-    axes[1,1].legend()
-    axes[1,1].grid(True, alpha=0.3)
-    
-    plt.tight_layout()
-    plt.savefig('burgers_1d_results.png', dpi=300, bbox_inches='tight')
-    plt.show()
-
-def create_2d_visualization(result):
-    """Create 2D-specific visualization."""
-    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-    
-    u_user = result['solution_user']
-    u_ref = result['solution_ref']
-    
-    # Final time solutions
-    u_user_final = u_user[:, :, -1]
-    u_ref_final = u_ref[:, :, -1]
-    error_final = np.abs(u_user_final - u_ref_final)
-    
-    # User solution
-    im1 = axes[0,0].contourf(u_user_final, levels=20, cmap='viridis')
-    axes[0,0].set_title('User Solution (final)')
-    plt.colorbar(im1, ax=axes[0,0])
-    
-    # Reference solution
-    im2 = axes[0,1].contourf(u_ref_final, levels=20, cmap='viridis')
-    axes[0,1].set_title('Reference Solution (final)')
-    plt.colorbar(im2, ax=axes[0,1])
-    
-    # Error
-    im3 = axes[0,2].contourf(error_final, levels=20, cmap='hot')
-    axes[0,2].set_title('Absolute Error (final)')
-    plt.colorbar(im3, ax=axes[0,2])
-    
-    # Cross-sections and error evolution
-    mid_x = u_user_final.shape[0] // 2
-    mid_y = u_user_final.shape[1] // 2
-    
-    axes[1,0].plot(u_ref_final[mid_x, :], label='Reference')
-    axes[1,0].plot(u_user_final[mid_x, :], '--', label='User')
-    axes[1,0].set_title('X cross-section')
-    axes[1,0].legend()
-    
-    axes[1,1].plot(u_ref_final[:, mid_y], label='Reference')
-    axes[1,1].plot(u_user_final[:, mid_y], '--', label='User')
-    axes[1,1].set_title('Y cross-section')
-    axes[1,1].legend()
-    
-    # Error evolution
-    t = result['time_points']
-    l2_errors = [np.sqrt(np.mean((u_user[:,:,i] - u_ref[:,:,i])**2)) for i in range(len(t))]
-    axes[1,2].semilogy(t, l2_errors)
-    axes[1,2].set_title('L2 Error Evolution')
-    axes[1,2].set_xlabel('Time')
-    axes[1,2].grid(True)
-    
-    plt.tight_layout()
-    plt.savefig('burgers_2d_results.png', dpi=300, bbox_inches='tight')
-    plt.show()
-
-def create_scaling_analysis(results):
-    """Create scaling analysis across dimensions."""
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
-    
-    dims = [r['dimension'] for r in results]
-    l2_errors = [r['l2_error'] for r in results]
-    times = [r['user_time'] for r in results]
-    
-    # Error scaling
-    ax1.semilogy(dims, l2_errors, 'bo-', linewidth=2, markersize=8)
-    ax1.set_xlabel('Dimension')
-    ax1.set_ylabel('L2 Error')
-    ax1.set_title('Error vs Dimension')
-    ax1.grid(True)
-    
-    # Time scaling
-    ax2.semilogy(dims, times, 'ro-', linewidth=2, markersize=8)
-    ax2.set_xlabel('Dimension')
-    ax2.set_ylabel('Solve Time (seconds)')
-    ax2.set_title('Performance vs Dimension')
-    ax2.grid(True)
-    
-    plt.tight_layout()
-    plt.savefig('burgers_scaling_analysis.png', dpi=300, bbox_inches='tight')
-    plt.show()
-    
-    print("Visualizations saved:")
-    print("- burgers_1d_results.png")
-    print("- burgers_2d_results.png") 
-    print("- burgers_scaling_analysis.png")
+    # TODO: Implement your visualizations
+    # Use utility functions: plot_1d_results, plot_2d_results, plot_scaling_analysis
+    print("TODO: Implement problem-specific visualizations")
 
 if __name__ == "__main__":
     results = run_benchmark()
-    print(f"\nBenchmark completed! Results: {len([r for r in results if r['success']])}/{len(results)} passed")
-    
-    # Save results
-    import json
-    results_clean = []
-    for r in results:
-        r_clean = {k: v for k, v in r.items() if k not in ['solution_user', 'solution_ref', 'spatial_points', 'time_points']}
-        results_clean.append(r_clean)
-    
-    with open('burgers_benchmark_results.json', 'w') as f:
-        json.dump(results_clean, f, indent=2)
-    print("Results saved to 'burgers_benchmark_results.json'")
+    save_results(results, f'{YOUR_PROBLEM_NAME}_benchmark_results.json')
