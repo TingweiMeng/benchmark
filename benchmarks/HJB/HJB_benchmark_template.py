@@ -13,7 +13,7 @@ Required solver interface:
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from benchmark_utils import *  # Import utility functions
+from ..utils import *  # Import utility functions
 
 # ==========================================
 # USER SOLVER IMPORT
@@ -28,6 +28,7 @@ except ImportError:
 # ==========================================
 # PROBLEM DEFINITION - CUSTOMIZE THESE
 # ==========================================
+YOUR_PROBLEM_NAME = "Your_HJB_Problem_Name"
 
 def hamiltonian(p, **params):
     """
@@ -166,7 +167,7 @@ def run_test_case(dimension, test_params):
 
 def run_benchmark():
     """Run comprehensive benchmark across all test cases."""
-    print("YOUR_PROBLEM_NAME Benchmark")
+    print(f"{YOUR_PROBLEM_NAME} Benchmark")
     print("=" * 40)
     
     test_cases = get_test_cases()
@@ -198,4 +199,4 @@ def create_visualizations(results):
 
 if __name__ == "__main__":
     results = run_benchmark()
-    save_results(results, 'your_problem_benchmark_results.json')
+    save_results(results, f'{YOUR_PROBLEM_NAME}_benchmark_results.json')
