@@ -13,32 +13,38 @@ from typing import Union, Tuple, List, Dict, Any
 # DOMAIN SETUP UTILITIES
 # ==========================================
 
-def setup_spatial_domain(dimension: int, **params) -> np.ndarray:
+def setup_spatial_domain(dimension: int, domain_type: str, **params) -> np.ndarray:
     """
     Setup spatial domain based on dimension and parameters.
     
     Args:
         dimension: Spatial dimension
-        **params: Domain parameters
+        domain_type: 'grid' or 'points'
+        **params: Domain parameters (default: [0,1]^d)
     
     Returns:
         Spatial points for evaluation
     """
-    if dimension == 1:
-        return setup_1d_domain(**params)
-    elif dimension == 2:
-        return setup_2d_domain(**params)
-    else:
-        return setup_nd_domain(dimension, **params)
+    assert domain_type in ['grid', 'points'], "domain_type must be 'grid' or 'points'"
+    if domain_type == 'grid':
+      if dimension == 1:
+        return setup_1d_domain_grid(**params)
+      elif dimension == 2:
+        return setup_2d_domain_grid(**params)
+      else:
+        raise NotImplementedError("Grid setup only implemented for 1D and 2D")
+    else:  # 'points'
+      # randomly sample points in N-D
+      return setup_sample_pts(dimension, **params)
 
-def setup_1d_domain(**params) -> np.ndarray:
-    """Setup 1D domain."""
+def setup_1d_domain_grid(**params) -> np.ndarray:
+    """Setup 1D grid points."""
     nx = params.get('nx', 100)
     x_range = params.get('x_range', (0, 1))
     return np.linspace(x_range[0], x_range[1], nx)
 
-def setup_2d_domain(**params) -> np.ndarray:
-    """Setup 2D domain."""
+def setup_2d_domain_grid(**params) -> np.ndarray:
+    """Setup 2D grid points."""
     nx = params.get('nx', 50)
     ny = params.get('ny', 50)
     x_range = params.get('x_range', (0, 1))
@@ -50,7 +56,7 @@ def setup_2d_domain(**params) -> np.ndarray:
     
     return np.stack([X, Y], axis=-1)
 
-def setup_nd_domain(dimension: int, **params) -> np.ndarray:
+def setup_sample_pts(dimension: int, **params) -> np.ndarray:
     """Setup N-dimensional domain with random points."""
     n_points = params.get('n_points', 1000)
     domain_bounds = params.get('domain_bounds', [(0, 1)] * dimension)
