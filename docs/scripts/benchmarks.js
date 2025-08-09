@@ -1,242 +1,213 @@
-// Define problems for each category
-const problems = {
-    hjb_pde: [
-        { title: "HJB PDE Problem 1", description: "Description of HJB PDE Problem 1" },
-        { title: "HJB PDE Problem 2", description: "Description of HJB PDE Problem 2" },
-    ],
-    optimal_control: [
-        { title: "Optimal Control Problem 1", description: "Description of Optimal Control Problem 1" },
-        { title: "Optimal Control Problem 2", description: "Description of Optimal Control Problem 2" },
-    ],
-    ot: [
-        { title: "Optimal Transport Problem 1", description: "Description of Optimal Transport Problem 1" },
-        { title: "Optimal Transport Problem 2", description: "Description of Optimal Transport Problem 2" },
-    ],
-    mfc: [
-        { title: "Mean-Field Control Problem 1", description: "Description of Mean-Field Control Problem 1" },
-        { title: "Mean-Field Control Problem 2", description: "Description of Mean-Field Control Problem 2" },
-    ],
-    jko: [
-        { title: "JKO Problem 1", description: "Description of JKO Problem 1" },
-        { title: "JKO Problem 2", description: "Description of JKO Problem 2" },
-    ],
-};
+// scripts/benchmarks.js
 
+let benchmarkData = null;
+let currentCategory = null;
 
-// Toggle collapsible panels
-document.addEventListener("DOMContentLoaded", function () {
-  const collapsibles = document.querySelectorAll(".collapsible");
-  
-  collapsibles.forEach(function(collapsible) {
-      collapsible.addEventListener("click", function() {
-          // Toggle active class
-          this.classList.toggle("active");
-          
-          // Get the content panel
-          const content = this.nextElementSibling;
-          
-          // Toggle content visibility
-          if (content.classList.contains("active")) {
-              content.classList.remove("active");
-          } else {
-              content.classList.add("active");
-          }
-      });
-  });
+// Load benchmark data when page loads
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadBenchmarkData();
+    generateCategoriesList();
+    showAllBenchmarks(); // Show all by default
 });
 
-// Show problems based on category
-// ...existing code...
+async function loadBenchmarkData() {
+    try {
+        const response = await fetch('benchmark_data.json');
+        benchmarkData = await response.json();
+        
+        // Update summary
+        updateSummary();
+        
+        // Hide loading
+        document.getElementById('benchmarks-loading').style.display = 'none';
+        document.getElementById('categories-loading').style.display = 'none';
+        
+    } catch (error) {
+        console.error('Error loading benchmark data:', error);
+        document.getElementById('benchmarks-loading').innerHTML = 'Error loading benchmarks. Please try again later.';
+        document.getElementById('categories-loading').innerHTML = 'Error loading categories.';
+    }
+}
 
-// Show problems based on category
+function updateSummary() {
+    if (!benchmarkData) return;
+    
+    document.getElementById('total-categories').textContent = `${benchmarkData.summary.total_categories} Categories`;
+    document.getElementById('total-benchmarks').textContent = `${benchmarkData.summary.total_benchmarks} Benchmarks`;
+    document.getElementById('total-test-cases').textContent = `${benchmarkData.summary.total_test_cases} Test Cases`;
+    document.getElementById('last-updated').textContent = `Last updated: ${new Date(benchmarkData.last_updated).toLocaleString()}`;
+    document.getElementById('benchmark-summary').style.display = 'block';
+}
+
+function generateCategoriesList() {
+    if (!benchmarkData) return;
+    
+    const categoriesList = document.getElementById('categories-list');
+    categoriesList.innerHTML = '<h3>Categories</h3>';
+    
+    // Add "All" option
+    const allButton = document.createElement('button');
+    allButton.textContent = 'All Benchmarks';
+    allButton.className = 'category-btn active';
+    allButton.onclick = () => showAllBenchmarks();
+    categoriesList.appendChild(allButton);
+    
+    // Add category buttons
+    Object.keys(benchmarkData.categories).forEach(category => {
+        const button = document.createElement('button');
+        button.textContent = formatCategoryName(category);
+        button.className = 'category-btn';
+        button.onclick = () => showProblems(category);
+        categoriesList.appendChild(button);
+    });
+}
+
+function formatCategoryName(category) {
+    return category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
+function showAllBenchmarks() {
+    if (!benchmarkData) return;
+    
+    currentCategory = null;
+    updateActiveCategory('All Benchmarks');
+    
+    const problemsList = document.getElementById('problems-list');
+    problemsList.innerHTML = '';
+    
+    // Show all benchmarks grouped by category
+    Object.entries(benchmarkData.categories).forEach(([category, benchmarks]) => {
+        const categorySection = document.createElement('div');
+        categorySection.className = 'category-section';
+        categorySection.innerHTML = `<h3>${formatCategoryName(category)}</h3>`;
+        
+        benchmarks.forEach(benchmark => {
+            const benchmarkCard = createBenchmarkCard(benchmark);
+            categorySection.appendChild(benchmarkCard);
+        });
+        
+        problemsList.appendChild(categorySection);
+    });
+}
+
 function showProblems(category) {
-  const problemsList = document.getElementById("problems-list");
-  
-  // Clear existing content
-  problemsList.innerHTML = "";
-  
-  if (category === 'hjb_pde') {
-      problemsList.innerHTML = `
-          <div class="problem-category">
-              <button class="collapsible">HJB PDE - Whole Domain</button>
-              <div class="collapsible-content">
-                  <div class="collapsible-inner">
-                      <h4>Problems with Unbounded or Whole Domain</h4>
-                      <p>Hamilton-Jacobi-Bellman equations solved on unbounded domains or the whole space.</p>
-                      
-                      <!-- Burgers' Equation -->
-                      <button class="collapsible">Burgers' Equation</button>
-                      <div class="collapsible-content">
-                          <div class="collapsible-inner">
-                              <p><strong>Description:</strong> The Burgers' equation is a fundamental PDE in fluid mechanics and nonlinear acoustics.</p>
-                              <p><strong>Equation:</strong></p>
-                              <pre>∂u/∂t + u ∂u/∂x = ν ∂²u/∂x²</pre>
-                              <p><strong>Initial Condition:</strong> u(x, 0) = -sin(πx), x ∈ [0, 1]</p>
-                              <p><strong>Boundary Conditions:</strong> Periodic boundary conditions</p>
-                              
-                              <div class="benchmark-links">
-                                  <button class="details-btn" onclick="toggleDetails('burgers')">📖 View Full Details</button>
-                                  <button class="download-btn" onclick="downloadBenchmark('burgers')">💾 Download Benchmark Code</button>
-                              </div>
-                              
-                              <!-- Details Panel -->
-                              <div id="burgers-details" class="details-panel" style="display: none;">
-                                  <div class="details-content">
-                                      <h4>📖 Burgers' Equation - Full Details</h4>
-                                      <div class="details-section">
-                                          <h5>Problem Overview</h5>
-                                          <p>The Burgers' equation is a simplified form of the Navier-Stokes equations that captures the essential nonlinear dynamics while remaining analytically tractable. It serves as an important test case for numerical methods.</p>
-                                      </div>
-                                      
-                                      <div class="details-section">
-                                          <h5>Mathematical Formulation</h5>
-                                          <p><strong>PDE:</strong></p>
-                                          <pre>∂u/∂t + u ∂u/∂x = ν ∂²u/∂x²</pre>
-                                          <p>where:</p>
-                                          <ul>
-                                              <li>u(x,t) is the velocity field</li>
-                                              <li>ν is the kinematic viscosity</li>
-                                              <li>x ∈ [0, 1] is the spatial domain</li>
-                                              <li>t > 0 is time</li>
-                                          </ul>
-                                      </div>
-                                      
-                                      <div class="details-section">
-                                          <h5>Initial and Boundary Conditions</h5>
-                                          <p><strong>Initial Condition:</strong></p>
-                                          <pre>u(x, 0) = -sin(πx), x ∈ [0, 1]</pre>
-                                          <p><strong>Boundary Conditions:</strong> Periodic boundary conditions</p>
-                                          <pre>u(0, t) = u(1, t)
-∂u/∂x|_{x=0} = ∂u/∂x|_{x=1}</pre>
-                                      </div>
-                                      
-                                      <div class="details-section">
-                                          <h5>Numerical Parameters</h5>
-                                          <ul>
-                                              <li>Viscosity: ν = 0.01</li>
-                                              <li>Domain: x ∈ [0, 1]</li>
-                                              <li>Time interval: t ∈ [0, 1]</li>
-                                              <li>Grid points: 256</li>
-                                              <li>Time steps: 1000</li>
-                                          </ul>
-                                      </div>
-                                      
-                                      <div class="details-section">
-                                          <h5>Expected Behavior</h5>
-                                          <p>The solution exhibits shock formation due to the nonlinear convection term, followed by viscous smoothing. The initial sinusoidal profile steepens and eventually develops into a smooth traveling wave.</p>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-          
-          <div class="problem-category">
-              <button class="collapsible">HJB PDE - Periodic Boundary Conditions</button>
-              <div class="collapsible-content">
-                  <div class="collapsible-inner">
-                      <h4>Problems with Periodic Boundary Conditions</h4>
-                      <p>Hamilton-Jacobi-Bellman equations with periodic boundary conditions.</p>
-                      <p><em>Benchmarks coming soon...</em></p>
-                  </div>
-              </div>
-          </div>
-          
-          <div class="problem-category">
-              <button class="collapsible">HJB PDE - Dirichlet Boundary Conditions</button>
-              <div class="collapsible-content">
-                  <div class="collapsible-inner">
-                      <h4>Problems with Dirichlet Boundary Conditions</h4>
-                      <p>Hamilton-Jacobi-Bellman equations with Dirichlet boundary conditions.</p>
-                      <p><em>Benchmarks coming soon...</em></p>
-                  </div>
-              </div>
-          </div>
-      `;
-      
-      // Re-initialize collapsible functionality for new content
-      initializeCollapsibles();
-  }
-  
-  // Add other categories here
-  else if (category === 'optimal_control') {
-      problemsList.innerHTML = `
-          <div class="problem-category">
-              <p><em>Optimal Control benchmarks coming soon...</em></p>
-          </div>
-      `;
-  }
-  else if (category === 'optimal_transport') {
-      problemsList.innerHTML = `
-          <div class="problem-category">
-              <p><em>Optimal Transport benchmarks coming soon...</em></p>
-          </div>
-      `;
-  }
-  else if (category === 'mean_field') {
-      problemsList.innerHTML = `
-          <div class="problem-category">
-              <p><em>Mean Field Control benchmarks coming soon...</em></p>
-          </div>
-      `;
-  }
+    if (!benchmarkData || !benchmarkData.categories[category]) return;
+    
+    currentCategory = category;
+    updateActiveCategory(formatCategoryName(category));
+    
+    const problemsList = document.getElementById('problems-list');
+    problemsList.innerHTML = '';
+    
+    const benchmarks = benchmarkData.categories[category];
+    benchmarks.forEach(benchmark => {
+        const benchmarkCard = createBenchmarkCard(benchmark);
+        problemsList.appendChild(benchmarkCard);
+    });
 }
 
-// Initialize collapsible functionality
-function initializeCollapsibles() {
-  const collapsibles = document.querySelectorAll(".collapsible");
-  
-  collapsibles.forEach(function(collapsible) {
-      // Remove existing event listeners to avoid duplicates
-      collapsible.replaceWith(collapsible.cloneNode(true));
-  });
-  
-  // Re-add event listeners
-  const newCollapsibles = document.querySelectorAll(".collapsible");
-  newCollapsibles.forEach(function(collapsible) {
-      collapsible.addEventListener("click", function() {
-          this.classList.toggle("active");
-          const content = this.nextElementSibling;
-          if (content && content.classList.contains("collapsible-content")) {
-              content.classList.toggle("active");
-          }
-      });
-  });
+function updateActiveCategory(categoryName) {
+    // Update active button
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent === categoryName) {
+            btn.classList.add('active');
+        }
+    });
 }
 
-// Download benchmark code
-function downloadBenchmark(problem) {
-  const downloadLinks = {
-      burgers: "../../benchmarks/HJB/HJB_wholedomain/burgers_benchmark.py",
-      // Add more benchmarks here as they become available
-  };
-
-  if (downloadLinks[problem]) {
-      // Create a temporary link element to trigger download
-      const link = document.createElement('a');
-      link.href = downloadLinks[problem];
-      link.download = downloadLinks[problem].split('/').pop(); // Extract filename
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-  } else {
-      alert("Benchmark code not available yet. Please check back soon!");
-  }
+function createBenchmarkCard(benchmark) {
+    const card = document.createElement('div');
+    card.className = 'benchmark-card';
+    
+    // Generate test cases table
+    const testCasesTable = benchmark.test_cases.map((testCase) => `
+        <tr class="${testCase.physics_regime.toLowerCase()}-case">
+            <td>${testCase.case_id}</td>
+            <td>${testCase.dimension}D</td>
+            <td>${testCase.point_details}</td>
+            <td>${testCase.parameters.nu !== undefined ? testCase.parameters.nu : 'N/A'}</td>
+            <td>${testCase.description}</td>
+        </tr>
+    `).join('');
+    
+    // Generate parameter badges
+    const dimensionBadges = benchmark.parameter_variations.dimensions.map(d => 
+        `<span class="badge">${d}D</span>`
+    ).join('');
+    
+    const viscosityBadges = benchmark.parameter_variations.viscosity_values.map(nu => 
+        `<span class="badge ${nu === 0 ? 'inviscid' : 'viscous'}">${nu === 0 ? 'Inviscid' : `ν=${nu}`}</span>`
+    ).join('');
+    
+    card.innerHTML = `
+        <div class="benchmark-header">
+            <h4>${benchmark.name}</h4>
+            <span class="category-badge">${formatCategoryName(benchmark.category)}</span>
+            <button class="download-btn" onclick="downloadBenchmark('${benchmark.download_url}', '${benchmark.name}')">
+                Download
+            </button>
+        </div>
+        
+        <div class="benchmark-description">
+            <p>${benchmark.description}</p>
+            ${benchmark.initial_condition ? `<p><strong>Initial condition:</strong> ${benchmark.initial_condition}</p>` : ''}
+        </div>
+        
+        <div class="test-cases-section">
+            <h5>Test Cases <span class="case-count">(${benchmark.total_cases} cases)</span></h5>
+            <button class="toggle-details" onclick="toggleTestCases(this)">Show Details ▼</button>
+            
+            <div class="test-cases-table" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Case</th>
+                            <th>Dimension</th>
+                            <th>Grid/Points</th>
+                            <th>Viscosity (ν)</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${testCasesTable}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="parameter-summary">
+                <div class="param-group">
+                    <h6>Dimensions Tested</h6>
+                    <div class="param-badges">${dimensionBadges}</div>
+                </div>
+                <div class="param-group">
+                    <h6>Physics Regimes</h6>
+                    <div class="param-badges">${viscosityBadges}</div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return card;
 }
 
-// Toggle details panel
-function toggleDetails(problem) {
-  const detailsPanel = document.getElementById(`${problem}-details`);
-  const button = event.target;
-  
-  if (detailsPanel.style.display === 'none') {
-      detailsPanel.style.display = 'block';
-      button.textContent = '📖 Hide Details';
-      detailsPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  } else {
-      detailsPanel.style.display = 'none';
-      button.textContent = '📖 View Full Details';
-  }
+function toggleTestCases(button) {
+    const table = button.parentElement.querySelector('.test-cases-table');
+    const isVisible = table.style.display !== 'none';
+    
+    if (isVisible) {
+        table.style.display = 'none';
+        button.textContent = 'Show Details ▼';
+    } else {
+        table.style.display = 'block';
+        button.textContent = 'Hide Details ▲';
+    }
+}
+
+function downloadBenchmark(url, benchmarkName) {
+    // You can implement actual download logic here
+    // For now, just log or redirect
+    console.log(`Downloading ${benchmarkName} from ${url}`);
+    // window.location.href = url;
+    alert(`Download functionality for ${benchmarkName} will be implemented soon!`);
 }

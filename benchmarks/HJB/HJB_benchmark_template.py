@@ -197,6 +197,93 @@ def create_visualizations(results):
     # Use utility functions: plot_1d_results, plot_2d_results, plot_scaling_analysis
     print("TODO: Implement problem-specific visualizations")
 
+
+# ==========================================
+# METADATA EXTRACTION - FOR WEBSITE
+# ==========================================
+
+def get_benchmark_metadata():
+    """
+    Extract benchmark metadata for website display.
+    This function is automatically parsed to generate website content.
+    """
+    test_cases = get_test_cases()
+    
+    # Extract unique parameter variations
+    dimensions = sorted(list(set(case[0] for case in test_cases)))
+    nu_values = sorted(list(set(case[1].get('nu', 0.0) for case in test_cases)))
+    
+    # Categorize by point generation method
+    grid_cases = []
+    random_cases = []
+    
+    for dim, params in test_cases:
+        if 'nx' in params or 'ny' in params:
+            grid_cases.append(dim)
+        else:
+            random_cases.append(dim)
+    
+    return {
+        "name": "Burgers Equation",
+        "category": "HJB_wholedomain", 
+        "description": "Viscous Burgers' equation: ∂u/∂t + u ∂u/∂x = ν ∂²u/∂x²",
+        "initial_condition": "u(x,0) = -sin(πx)",
+        "total_cases": len(test_cases),
+        "test_cases": [
+            {
+                "case_id": i+1,
+                "dimension": case[0],
+                "parameters": case[1],
+                "point_type": "Grid" if ('nx' in case[1] or 'ny' in case[1]) else "Random",
+                "point_details": get_point_details(case[0], case[1]),
+                "physics_regime": get_physics_regime(case[1].get('nu', 0.0)),
+                "description": get_case_description(case[0], case[1])
+            }
+            for i, case in enumerate(test_cases)
+        ],
+        "parameter_variations": {
+            "dimensions": dimensions,
+            "viscosity_values": nu_values,
+            "grid_dimensions": sorted(list(set(grid_cases))),
+            "random_dimensions": sorted(list(set(random_cases)))
+        }
+    }
+
+def get_point_details(dimension, params):
+    """Get human-readable point generation details."""
+    if 'nx' in params and 'ny' in params:
+        return f"{params['nx']}×{params['ny']} grid"
+    elif 'nx' in params:
+        return f"{params['nx']} grid points"
+    elif 'n_points' in params:
+        return f"{params['n_points']} random points"
+    else:
+        return "Unknown"
+
+def get_physics_regime(nu):
+    """Categorize physics regime based on viscosity."""
+    if nu == 0.0:
+        return "Inviscid"
+    elif nu <= 0.01:
+        return "Viscous"
+    else:
+        return "Highly Viscous"
+
+def get_case_description(dimension, params):
+    """Generate case description."""
+    nu = params.get('nu', 0.0)
+    regime = "conservation law" if nu == 0.0 else "diffusion-dominated"
+    
+    if dimension == 1:
+        return f"1D {regime}"
+    elif dimension == 2:
+        return f"2D {regime}"
+    else:
+        return f"{dimension}D high-dimensional {regime}"
+
+# ==========================================
+# MAIN EXECUTION
+# ==========================================
 if __name__ == "__main__":
     results = run_benchmark()
     save_results(results, f'{YOUR_PROBLEM_NAME}_benchmark_results.json')

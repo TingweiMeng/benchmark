@@ -11,19 +11,28 @@
     <main class="benchmarks-layout">
         <aside class="sidebar">
             <h3>Categories</h3>
-            <ul>
-                <li><button onclick="showProblems('hjb_pde')">HJB PDE</button></li>
-                <li><button onclick="showProblems('optimal_control')">Optimal Control</button></li>
-                <li><button onclick="showProblems('optimal_transport')">Optimal Transport</button></li>
-                <li><button onclick="showProblems('mean_field')">Mean Field Control</button></li>
-            </ul>
+            <div id="categories-list">
+                <!-- Categories will be dynamically loaded -->
+                <div id="categories-loading">Loading categories...</div>
+            </div>
         </aside>
         <section class="content">
             <h2>Available Benchmarks</h2>
             <p><strong>New to benchmarks?</strong> Visit the <a href="user_guide.html">User Guide</a> for detailed instructions on how to download, implement, and test your solutions.</p>
             
+            <!-- Benchmark Summary (dynamically populated) -->
+            <div id="benchmark-summary" style="display: none;">
+                <div class="summary-stats">
+                    <span class="stat" id="total-categories">0 Categories</span>
+                    <span class="stat" id="total-benchmarks">0 Benchmarks</span>
+                    <span class="stat" id="total-test-cases">0 Test Cases</span>
+                </div>
+                <p class="last-updated" id="last-updated"></p>
+            </div>
+            
+            <!-- Problems List (dynamically populated) -->
             <div id="problems-list">
-                <p>Select a category from the sidebar to view available benchmarks.</p>
+                <div id="benchmarks-loading">Loading benchmarks...</div>
             </div>
         </section>
     </main>
