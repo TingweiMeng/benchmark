@@ -43,7 +43,7 @@ function generateCategoriesList() {
     if (!benchmarkData) return;
     
     const categoriesList = document.getElementById('categories-list');
-    categoriesList.innerHTML = '<h3>Categories</h3>';
+    categoriesList.innerHTML = '';
     
     // Add "All" option
     const allButton = document.createElement('button');
@@ -57,7 +57,7 @@ function generateCategoriesList() {
         const button = document.createElement('button');
         button.textContent = formatCategoryName(category);
         button.className = 'category-btn';
-        button.onclick = () => showProblems(category);
+        button.onclick = () => showCategory(category);
         categoriesList.appendChild(button);
     });
 }
@@ -90,7 +90,7 @@ function showAllBenchmarks() {
     });
 }
 
-function showProblems(category) {
+function showCategory(category) {
     if (!benchmarkData || !benchmarkData.categories[category]) return;
     
     currentCategory = category;
@@ -122,7 +122,7 @@ function createBenchmarkCard(benchmark) {
     
     // Generate test cases table
     const testCasesTable = benchmark.test_cases.map((testCase) => `
-        <tr class="${testCase.physics_regime.toLowerCase()}-case">
+        <tr class="${testCase.physics_regime.toLowerCase().replace(/\s+/g, '-')}-case">
             <td>${testCase.case_id}</td>
             <td>${testCase.dimension}D</td>
             <td>${testCase.point_details}</td>
@@ -136,53 +136,97 @@ function createBenchmarkCard(benchmark) {
         `<span class="badge">${d}D</span>`
     ).join('');
     
-    const viscosityBadges = benchmark.parameter_variations.viscosity_values.map(nu => 
-        `<span class="badge ${nu === 0 ? 'inviscid' : 'viscous'}">${nu === 0 ? 'Inviscid' : `ν=${nu}`}</span>`
+    // Generate physics regime badges
+    const physicsRegimes = [...new Set(benchmark.test_cases.map(tc => tc.physics_regime))];
+    const physicsBadges = physicsRegimes.map(regime => {
+        const className = regime.toLowerCase().replace(/\s+/g, '-');
+        return `<span class="badge ${className}">${regime}</span>`;
+    }).join('');
+    
+    // Generate point type badges
+    const pointTypes = benchmark.quick_stats.point_types || [];
+    const pointBadges = pointTypes.map(type => 
+        `<span class="badge point-${type.toLowerCase()}">${type}</span>`
     ).join('');
     
     card.innerHTML = `
         <div class="benchmark-header">
             <h4>${benchmark.name}</h4>
             <span class="category-badge">${formatCategoryName(benchmark.category)}</span>
-            <button class="download-btn" onclick="downloadBenchmark('${benchmark.download_url}', '${benchmark.name}')">
+            <button class="download-btn" onclick="downloadBenchmark('${benchmark.file_path}', '${benchmark.name}')">
                 Download
             </button>
         </div>
         
         <div class="benchmark-description">
-            <p>${benchmark.description}</p>
+            <p>${benchmark.short_description}</p>
+            <p><strong>Equation:</strong> ${benchmark.equation}</p>
             ${benchmark.initial_condition ? `<p><strong>Initial condition:</strong> ${benchmark.initial_condition}</p>` : ''}
+            
+            <!-- Quick Summary Badges -->
+            <div class="quick-summary">
+                <span class="summary-badge">${benchmark.quick_stats.total_cases} test cases</span>
+                <span class="summary-badge">${benchmark.quick_stats.dimension_range}</span>
+                ${pointBadges}
+            </div>
         </div>
         
-        <div class="test-cases-section">
-            <h5>Test Cases <span class="case-count">(${benchmark.total_cases} cases)</span></h5>
-            <button class="toggle-details" onclick="toggleTestCases(this)">Show Details ▼</button>
+        <div class="detailed-info">
+            <button class="expand-btn" onclick="toggleDetails(this)">
+                <span>View Test Case Details</span>
+                <span class="icon">▼</span>
+            </button>
             
-            <div class="test-cases-table" style="display: none;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Case</th>
-                            <th>Dimension</th>
-                            <th>Grid/Points</th>
-                            <th>Viscosity (ν)</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${testCasesTable}
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="parameter-summary">
-                <div class="param-group">
-                    <h6>Dimensions Tested</h6>
-                    <div class="param-badges">${dimensionBadges}</div>
+            <div class="details-content" style="display: none;">
+                <!-- Testing Aspects Overview -->
+                ${Object.keys(benchmark.testing_aspects).length > 0 ? `
+                <div class="testing-overview">
+                    <h5>What This Benchmark Tests</h5>
+                    <div class="test-aspects">
+                        ${Object.entries(benchmark.testing_aspects).map(([key, value]) => `
+                            <div class="aspect">
+                                <strong>${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</strong> ${value}
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
-                <div class="param-group">
-                    <h6>Physics Regimes</h6>
-                    <div class="param-badges">${viscosityBadges}</div>
+                ` : ''}
+                
+                <!-- Detailed Test Cases Table -->
+                <div class="test-cases-table">
+                    <h5>Complete Test Case Breakdown</h5>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Case</th>
+                                <th>Dimension</th>
+                                <th>Point Setup</th>
+                                <th>Viscosity (ν)</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${testCasesTable}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Parameter Summary -->
+                <div class="parameter-summary">
+                    <div class="param-group">
+                        <h6>Dimensions Tested</h6>
+                        <div class="param-badges">${dimensionBadges}</div>
+                    </div>
+                    <div class="param-group">
+                        <h6>Physics Regimes</h6>
+                        <div class="param-badges">${physicsBadges}</div>
+                    </div>
+                    ${pointTypes.length > 0 ? `
+                    <div class="param-group">
+                        <h6>Point Generation Methods</h6>
+                        <div class="param-badges">${pointBadges}</div>
+                    </div>
+                    ` : ''}
                 </div>
             </div>
         </div>
@@ -191,23 +235,41 @@ function createBenchmarkCard(benchmark) {
     return card;
 }
 
-function toggleTestCases(button) {
-    const table = button.parentElement.querySelector('.test-cases-table');
-    const isVisible = table.style.display !== 'none';
+function toggleDetails(button) {
+    const detailsContent = button.parentElement.querySelector('.details-content');
+    const icon = button.querySelector('.icon');
+    const isVisible = detailsContent.style.display !== 'none';
     
     if (isVisible) {
-        table.style.display = 'none';
-        button.textContent = 'Show Details ▼';
+        detailsContent.style.display = 'none';
+        icon.textContent = '▼';
+        button.querySelector('span').textContent = 'View Test Case Details';
     } else {
-        table.style.display = 'block';
-        button.textContent = 'Hide Details ▲';
+        detailsContent.style.display = 'block';
+        icon.textContent = '▲';
+        button.querySelector('span').textContent = 'Hide Test Case Details';
     }
 }
 
-function downloadBenchmark(url, benchmarkName) {
-    // You can implement actual download logic here
-    // For now, just log or redirect
-    console.log(`Downloading ${benchmarkName} from ${url}`);
-    // window.location.href = url;
-    alert(`Download functionality for ${benchmarkName} will be implemented soon!`);
+function downloadBenchmark(filePath, benchmarkName) {
+    console.log('Debug - filePath:', filePath);
+    console.log('Debug - benchmarkName:', benchmarkName);
+    
+    // Extract just the filename if filePath contains directories
+    const fileName = filePath.split('/').pop();
+    console.log('Debug - fileName:', fileName);
+    
+    // Construct the correct download URL
+    const downloadUrl = `../benchmarks/HJB/HJB_wholedomain/${fileName}`;
+    console.log('Debug - downloadUrl:', downloadUrl);
+    
+    // Create temporary link and trigger download
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    console.log(`Downloaded ${benchmarkName}: ${fileName}`);
 }

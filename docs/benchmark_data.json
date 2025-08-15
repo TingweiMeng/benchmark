@@ -1,9 +1,190 @@
 {
-  "last_updated": "2025-08-08T23:59:35.790185",
+  "last_updated": "2025-08-14T23:29:26.574768",
   "summary": {
-    "total_categories": 0,
-    "total_benchmarks": 0,
-    "total_test_cases": 0
+    "total_categories": 1,
+    "total_benchmarks": 1,
+    "total_test_cases": 10
   },
-  "categories": {}
+  "categories": {
+    "HJB": [
+      {
+        "name": "Burgers Equation",
+        "category": "HJB_wholedomain",
+        "short_description": "Viscous Burgers' equation modeling nonlinear convection-diffusion",
+        "equation": "\u2202u/\u2202t + u \u2202u/\u2202x = \u03bd \u2202\u00b2u/\u2202x\u00b2",
+        "initial_condition": "u(x,0) = -sin(\u03c0x)",
+        "file_path": "HJB/HJB_wholedomain/burgers_benchmark.py",
+        "quick_stats": {
+          "total_cases": 10,
+          "dimension_range": "1D-10D",
+          "point_types": [
+            "Grid",
+            "Random"
+          ],
+          "parameter_count": 4
+        },
+        "test_cases": [
+          {
+            "case_id": 1,
+            "dimension": 1,
+            "parameters": {
+              "nx": 100,
+              "nu": 0.0
+            },
+            "point_type": "Grid",
+            "point_details": "100 grid points",
+            "physics_regime": "Conservation Law",
+            "description": "1D conservation law (classic Burgers)"
+          },
+          {
+            "case_id": 2,
+            "dimension": 2,
+            "parameters": {
+              "nx": 50,
+              "ny": 50,
+              "nu": 0.0
+            },
+            "point_type": "Grid",
+            "point_details": "50\u00d750 grid",
+            "physics_regime": "Conservation Law",
+            "description": "2D conservation law (Burgers in x, constant in y)"
+          },
+          {
+            "case_id": 3,
+            "dimension": 3,
+            "parameters": {
+              "n_points": 1000,
+              "nu": 0.0
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Conservation Law",
+            "description": "3D conservation law (high-dimensional test)"
+          },
+          {
+            "case_id": 4,
+            "dimension": 5,
+            "parameters": {
+              "n_points": 1000,
+              "nu": 0.0
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Conservation Law",
+            "description": "5D conservation law (high-dimensional test)"
+          },
+          {
+            "case_id": 5,
+            "dimension": 10,
+            "parameters": {
+              "n_points": 1000,
+              "nu": 0.0
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Conservation Law",
+            "description": "10D conservation law (high-dimensional test)"
+          },
+          {
+            "case_id": 6,
+            "dimension": 1,
+            "parameters": {
+              "nx": 100,
+              "nu": 0.01
+            },
+            "point_type": "Grid",
+            "point_details": "100 grid points",
+            "physics_regime": "Diffusion-Dominated",
+            "description": "1D diffusion-dominated (classic Burgers)"
+          },
+          {
+            "case_id": 7,
+            "dimension": 2,
+            "parameters": {
+              "nx": 50,
+              "ny": 50,
+              "nu": 0.01
+            },
+            "point_type": "Grid",
+            "point_details": "50\u00d750 grid",
+            "physics_regime": "Diffusion-Dominated",
+            "description": "2D diffusion-dominated (Burgers in x, constant in y)"
+          },
+          {
+            "case_id": 8,
+            "dimension": 3,
+            "parameters": {
+              "n_points": 1000,
+              "nu": 0.01
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Diffusion-Dominated",
+            "description": "3D diffusion-dominated (high-dimensional test)"
+          },
+          {
+            "case_id": 9,
+            "dimension": 5,
+            "parameters": {
+              "n_points": 1000,
+              "nu": 0.01
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Diffusion-Dominated",
+            "description": "5D diffusion-dominated (high-dimensional test)"
+          },
+          {
+            "case_id": 10,
+            "dimension": 10,
+            "parameters": {
+              "n_points": 1000,
+              "nu": 0.01
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Diffusion-Dominated",
+            "description": "10D diffusion-dominated (high-dimensional test)"
+          }
+        ],
+        "parameter_variations": {
+          "dimensions": [
+            1,
+            2,
+            3,
+            5,
+            10
+          ],
+          "grid_dimensions": [
+            1,
+            2
+          ],
+          "random_dimensions": [
+            3,
+            5,
+            10
+          ],
+          "nx": [
+            50,
+            100
+          ],
+          "nu": [
+            0.0,
+            0.01
+          ],
+          "ny": [
+            50
+          ],
+          "n_points": [
+            1000
+          ]
+        },
+        "testing_aspects": {
+          "dimensional_scaling": "Tests solver performance from 1D to 10D",
+          "physics_regimes": "Tests both inviscid and viscous regimes"
+        },
+        "download_url": "/benchmarks/HJB/HJB_wholedomain/burgers_benchmark.py"
+      }
+    ]
+  }
 }

@@ -201,85 +201,151 @@ def create_visualizations(results):
 # ==========================================
 # METADATA EXTRACTION - FOR WEBSITE
 # ==========================================
-
 def get_benchmark_metadata():
     """
     Extract benchmark metadata for website display.
-    This function is automatically parsed to generate website content.
+    This function is automatically inherited by all benchmarks.
+    Override get_problem_specific_info() to customize.
     """
     test_cases = get_test_cases()
     
-    # Extract unique parameter variations
+    # Extract parameter variations automatically
     dimensions = sorted(list(set(case[0] for case in test_cases)))
-    nu_values = sorted(list(set(case[1].get('nu', 0.0) for case in test_cases)))
     
-    # Categorize by point generation method
+    # Detect parameter types automatically
+    all_params = {}
+    for _, params in test_cases:
+        for key, value in params.items():
+            if key not in all_params:
+                all_params[key] = set()
+            all_params[key].add(value)
+    
+    # Convert sets to sorted lists
+    parameter_variations = {k: sorted(list(v)) for k, v in all_params.items()}
+    
+    # Auto-detect point generation methods
     grid_cases = []
     random_cases = []
-    
     for dim, params in test_cases:
-        if 'nx' in params or 'ny' in params:
+        if 'nx' in params or 'ny' in params or 'nz' in params:
             grid_cases.append(dim)
         else:
             random_cases.append(dim)
     
+    # Get problem-specific info (users override this)
+    problem_info = get_problem_specific_info()
+    
     return {
-        "name": "Burgers Equation",
-        "category": "HJB_wholedomain", 
-        "description": "Viscous Burgers' equation: ∂u/∂t + u ∂u/∂x = ν ∂²u/∂x²",
-        "initial_condition": "u(x,0) = -sin(πx)",
-        "total_cases": len(test_cases),
+        "name": problem_info.get("name", YOUR_PROBLEM_NAME.replace("_", " ")),
+        "category": problem_info.get("category", "HJB"),
+        "short_description": problem_info.get("short_description", "PDE benchmark problem"),
+        "equation": problem_info.get("equation", "Fill in equation"),
+        "initial_condition": problem_info.get("initial_condition", "Fill in initial condition"),
+        "file_path": f"{YOUR_PROBLEM_NAME.lower()}_benchmark.py",
+        
+        # Auto-generated stats
+        "quick_stats": {
+            "total_cases": len(test_cases),
+            "dimension_range": f"1D-{max(dimensions)}D" if len(dimensions) > 1 else f"{dimensions[0]}D",
+            "point_types": get_point_types(grid_cases, random_cases),
+            "parameter_count": len(parameter_variations)
+        },
+        
+        # Auto-generated test case details
         "test_cases": [
             {
                 "case_id": i+1,
                 "dimension": case[0],
                 "parameters": case[1],
-                "point_type": "Grid" if ('nx' in case[1] or 'ny' in case[1]) else "Random",
+                "point_type": "Grid" if case[0] in grid_cases else "Random",
                 "point_details": get_point_details(case[0], case[1]),
-                "physics_regime": get_physics_regime(case[1].get('nu', 0.0)),
-                "description": get_case_description(case[0], case[1])
+                "physics_regime": get_physics_regime(case[1]),
+                "description": get_case_description(case[0], case[1], problem_info)
             }
             for i, case in enumerate(test_cases)
         ],
+        
+        # Auto-generated parameter variations
         "parameter_variations": {
             "dimensions": dimensions,
-            "viscosity_values": nu_values,
             "grid_dimensions": sorted(list(set(grid_cases))),
-            "random_dimensions": sorted(list(set(random_cases)))
-        }
+            "random_dimensions": sorted(list(set(random_cases))),
+            **parameter_variations
+        },
+        
+        # Testing aspects (auto-generated with fallbacks)
+        "testing_aspects": get_testing_aspects(dimensions, parameter_variations, problem_info)
+    }
+
+def get_problem_specific_info():
+    """
+    Override this function in your specific benchmark to provide custom info.
+    Default implementation provides generic information.
+    """
+    return {
+        "name": YOUR_PROBLEM_NAME.replace("_", " "),
+        "category": "HJB", 
+        "short_description": "PDE benchmark problem",
+        "equation": "Please specify the equation in get_problem_specific_info()",
+        "initial_condition": "Please specify initial condition in get_problem_specific_info()"
     }
 
 def get_point_details(dimension, params):
-    """Get human-readable point generation details."""
-    if 'nx' in params and 'ny' in params:
+    """Auto-detect point generation details."""
+    if 'nx' in params and 'ny' in params and 'nz' in params:
+        return f"{params['nx']}×{params['ny']}×{params['nz']} grid"
+    elif 'nx' in params and 'ny' in params:
         return f"{params['nx']}×{params['ny']} grid"
     elif 'nx' in params:
         return f"{params['nx']} grid points"
     elif 'n_points' in params:
         return f"{params['n_points']} random points"
     else:
-        return "Unknown"
+        return "Custom point distribution"
 
-def get_physics_regime(nu):
-    """Categorize physics regime based on viscosity."""
-    if nu == 0.0:
-        return "Inviscid"
-    elif nu <= 0.01:
-        return "Viscous"
-    else:
-        return "Highly Viscous"
+def get_physics_regime(params):
+    """Auto-detect physics regime - override for problem-specific logic."""
+    if 'nu' in params:
+        nu = params['nu']
+        if nu == 0.0:
+            return "Inviscid"
+        elif nu <= 0.01:
+            return "Viscous"
+        else:
+            return "Highly Viscous"
+    return "Standard"
 
-def get_case_description(dimension, params):
-    """Generate case description."""
-    nu = params.get('nu', 0.0)
-    regime = "conservation law" if nu == 0.0 else "diffusion-dominated"
+def get_case_description(dimension, params, problem_info):
+    """Generate case description - override for problem-specific logic."""
+    regime = get_physics_regime(params)
+    return f"{dimension}D {regime.lower()} case"
+
+def get_point_types(grid_cases, random_cases):
+    """Auto-detect point generation types."""
+    types = []
+    if grid_cases:
+        types.append("Grid")
+    if random_cases:
+        types.append("Random")
+    return types
+
+def get_testing_aspects(dimensions, parameter_variations, problem_info):
+    """Auto-generate testing aspects."""
+    aspects = {}
     
-    if dimension == 1:
-        return f"1D {regime}"
-    elif dimension == 2:
-        return f"2D {regime}"
-    else:
-        return f"{dimension}D high-dimensional {regime}"
+    if len(dimensions) > 1:
+        aspects["dimensional_scaling"] = f"Tests solver performance from {min(dimensions)}D to {max(dimensions)}D"
+    
+    if 'nu' in parameter_variations:
+        nu_values = parameter_variations['nu']
+        if 0.0 in nu_values:
+            aspects["physics_regimes"] = "Tests both inviscid and viscous regimes"
+        else:
+            aspects["physics_regimes"] = f"Tests viscous behavior with ν = {nu_values}"
+    
+    # Add more auto-detection logic as needed
+    
+    return aspects
 
 # ==========================================
 # MAIN EXECUTION
