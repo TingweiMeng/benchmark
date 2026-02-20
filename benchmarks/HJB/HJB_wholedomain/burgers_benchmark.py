@@ -303,11 +303,20 @@ def run_benchmark():
 def create_visualizations(results):
     """Create problem-specific visualizations."""
     successful_results = [r for r in results if r['success']]
-    
+
     if not successful_results:
         return
-    
-    # Use utility functions: plot_1d_results, plot_2d_results, plot_scaling_analysis
+
+    # Plot per-dimension results
+    for i, result in enumerate(successful_results):
+        dim = result['dimension']
+        if dim == 1:
+            plot_1d_results(result, filename=f'burgers_1d_case{i+1}.png')
+        elif dim == 2:
+            plot_2d_results(result, filename=f'burgers_2d_case{i+1}.png')
+
+    # Overall scaling analysis
+    plot_scaling_analysis(successful_results, filename='burgers_scaling_analysis.png')
 
 # ==========================================
 # METADATA EXTRACTION - FOR WEBSITE
