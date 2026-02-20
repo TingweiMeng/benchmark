@@ -79,18 +79,15 @@ def initial_condition(spatial_points, ic_type='sine', **params):
     else:
         raise ValueError(f"Unknown initial condition type: {ic_type}")
 
-# TODO: check ref solution
 def reference_solution(spatial_points, time_points, nu=0.01, **params):
     """
     High-accuracy reference solution using fine grid finite differences.
     """
-    # if spatial_points.ndim == 1:
-    #     return reference_solution_1d(spatial_points, time_points, nu)
-    # else:
-    #     return reference_solution_multid(spatial_points, time_points, nu, **params)
-    return 0* spatial_points[...,0]
+    if spatial_points.ndim == 1:
+        return reference_solution_1d(spatial_points, time_points, nu)
+    else:
+        return reference_solution_multid(spatial_points, time_points, nu, **params)
 
-# comment from here
 def reference_solution_1d(x, t, nu):
     """1D reference solution with fine grid."""
     # Use 4x finer grid for higher accuracy
@@ -108,7 +105,7 @@ def reference_solution_1d(x, t, nu):
     
     # Initialize solution
     u = np.zeros((nx, nt))
-    u[:, 0] = initial_condition(x_fine)
+    u[:, 0] = initial_condition(x_fine.reshape(-1, 1))
     
     # Higher-order time stepping (RK2) with higher-order spatial discretization
     for n in range(nt - 1):
@@ -189,7 +186,6 @@ def reference_solution_multid(spatial_points, time_points, nu, **params):
             u_points[i, :] = u_1d_point[0, :]
         
         return u_points
-# uncomment
 
 # ==========================================
 # TEST CONFIGURATION - CUSTOMIZE THESE
@@ -224,7 +220,6 @@ def get_default_params():
     Returns:
         Dict of default parameters
     """
-    # TODO: Set your default parameters
     return {
         'time_final': 0.5,
         'nt': 50,
@@ -306,18 +301,13 @@ def run_benchmark():
     return results
 
 def create_visualizations(results):
-    """
-    Create problem-specific visualizations.
-    TODO: Customize for your problem
-    """
+    """Create problem-specific visualizations."""
     successful_results = [r for r in results if r['success']]
     
     if not successful_results:
         return
     
-    # TODO: Implement your visualizations
     # Use utility functions: plot_1d_results, plot_2d_results, plot_scaling_analysis
-    print("TODO: Implement problem-specific visualizations")
 
 # ==========================================
 # METADATA EXTRACTION - FOR WEBSITE
