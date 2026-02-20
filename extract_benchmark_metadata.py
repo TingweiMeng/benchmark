@@ -25,22 +25,34 @@ def extract_benchmark_metadata(benchmark_file_path):
         
         # Mock imports that might fail
         import types
-        
+        from unittest.mock import MagicMock
+
         # Mock solver
         mock_solver = types.ModuleType('solver')
         mock_solver.solve_HJB = lambda *args, **kwargs: None
         sys.modules['solver'] = mock_solver
-        
+
+        # Mock matplotlib and scipy (may be broken due to NumPy version conflicts)
+        for mod_name in [
+            'matplotlib', 'matplotlib.pyplot', 'matplotlib.figure',
+            'matplotlib.axes', 'matplotlib.colors',
+            'scipy', 'scipy.interpolate', 'scipy.optimize', 'scipy.special',
+        ]:
+            if mod_name not in sys.modules:
+                sys.modules[mod_name] = MagicMock()
+        # Ensure `plt` alias works
+        sys.modules['matplotlib.pyplot'] = MagicMock()
+
         # Mock utils and template modules
         mock_utils = types.ModuleType('utils')
         sys.modules['utils'] = mock_utils
-        
+
         # Create mock template and benchmark modules for relative imports
         mock_template = types.ModuleType('template')
         mock_template.utils = mock_utils
         sys.modules['template'] = mock_template
         sys.modules['template.utils'] = mock_utils
-        
+
         # Mock the relative import structure
         mock_benchmark = types.ModuleType('benchmark')
         mock_benchmark.template = mock_template
@@ -48,11 +60,11 @@ def extract_benchmark_metadata(benchmark_file_path):
         sys.modules['benchmark'] = mock_benchmark
         sys.modules['benchmark.template'] = mock_template
         sys.modules['benchmark.template.utils'] = mock_utils
-        
+
         # Read the file and modify relative imports
         with open(benchmark_file_path, 'r') as f:
             content = f.read()
-        
+
         # Replace problematic relative imports
         content = content.replace('from ...utils import *', '# from ...utils import *  # Mocked')
         content = content.replace('from ..template.utils import *', '# from ..template.utils import *  # Mocked')

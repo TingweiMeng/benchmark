@@ -1,11 +1,462 @@
 {
-  "last_updated": "2025-08-14T23:29:26.574768",
+  "last_updated": "2026-02-20T11:40:04.545933",
   "summary": {
-    "total_categories": 1,
-    "total_benchmarks": 1,
-    "total_test_cases": 10
+    "total_categories": 5,
+    "total_benchmarks": 5,
+    "total_test_cases": 35
   },
   "categories": {
+    "WGF": [
+      {
+        "name": "Wasserstein Gradient Flow (Heat Equation)",
+        "category": "WGF",
+        "short_description": "Wasserstein gradient flow of the Boltzmann entropy (heat equation) with bimodal Gaussian initial density",
+        "equation": "\u2202\u03c6/\u2202t + \u00bd|\u2207\u03c6|\u00b2 - \u00bd\u03c3\u00b2\u0394\u03c6 = 0  (Hopf-Cole form of \u2202\u03c1/\u2202t = \u00bd\u03c3\u00b2\u0394\u03c1)",
+        "initial_condition": "\u03c6(x,0) = -\u03c3\u00b2 log[\u00bdN(x;+\u03bc,\u03c3\u2080\u00b2I) + \u00bdN(x;-\u03bc,\u03c3\u2080\u00b2I)]",
+        "file_path": "heat_wgf_benchmark.py",
+        "quick_stats": {
+          "total_cases": 5,
+          "dimension_range": "1D-10D",
+          "point_types": [
+            "Grid",
+            "Random"
+          ],
+          "parameter_count": 6
+        },
+        "test_cases": [
+          {
+            "case_id": 1,
+            "dimension": 1,
+            "parameters": {
+              "nx": 100,
+              "domain_type": "grid",
+              "sigma": 0.3,
+              "sigma0": 1.0
+            },
+            "point_type": "Grid",
+            "point_details": "100 grid points",
+            "physics_regime": "Diffusive (\u03c3=0.3)",
+            "description": "1D WGF heat, \u03c3=0.3 (grid)"
+          },
+          {
+            "case_id": 2,
+            "dimension": 2,
+            "parameters": {
+              "nx": 50,
+              "ny": 50,
+              "domain_type": "grid",
+              "sigma": 0.3,
+              "sigma0": 1.0
+            },
+            "point_type": "Grid",
+            "point_details": "50\u00d750 grid",
+            "physics_regime": "Diffusive (\u03c3=0.3)",
+            "description": "2D WGF heat, \u03c3=0.3 (grid)"
+          },
+          {
+            "case_id": 3,
+            "dimension": 3,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points",
+              "sigma": 0.3,
+              "sigma0": 1.0
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Diffusive (\u03c3=0.3)",
+            "description": "3D WGF heat, \u03c3=0.3 (random points)"
+          },
+          {
+            "case_id": 4,
+            "dimension": 5,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points",
+              "sigma": 0.3,
+              "sigma0": 1.0
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Diffusive (\u03c3=0.3)",
+            "description": "5D WGF heat, \u03c3=0.3 (random points)"
+          },
+          {
+            "case_id": 5,
+            "dimension": 10,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points",
+              "sigma": 0.3,
+              "sigma0": 1.0
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Diffusive (\u03c3=0.3)",
+            "description": "10D WGF heat, \u03c3=0.3 (random points)"
+          }
+        ],
+        "parameter_variations": {
+          "dimensions": [
+            1,
+            2,
+            3,
+            5,
+            10
+          ],
+          "grid_dimensions": [
+            1,
+            2
+          ],
+          "random_dimensions": [
+            3,
+            5,
+            10
+          ],
+          "nx": [
+            100,
+            50
+          ],
+          "domain_type": [
+            "grid",
+            "points"
+          ],
+          "sigma": [
+            0.3
+          ],
+          "sigma0": [
+            1.0
+          ],
+          "ny": [
+            50
+          ],
+          "n_points": [
+            1000
+          ]
+        },
+        "testing_aspects": {
+          "dimensional_scaling": "Tests solver scalability from 1D to 10D",
+          "multi_modal": "Bimodal initial density tests handling of non-convex potentials",
+          "analytical_reference": "Analytical reference via evolving bimodal Gaussian under heat flow"
+        },
+        "download_url": "/download/WGF/Heat_WGF/heat_wgf_benchmark.py"
+      }
+    ],
+    "SOC": [
+      {
+        "name": "Stochastic LQR",
+        "category": "SOC",
+        "short_description": "Viscous HJB equation for the stochastic LQR problem with Brownian noise",
+        "equation": "\u2202\u03c6/\u2202\u03c4 + \u00bd|\u2207\u03c6|\u00b2 - \u00bd\u03c3\u00b2\u0394\u03c6 = 0",
+        "initial_condition": "\u03c6(x, 0) = \u00bd|x|\u00b2",
+        "file_path": "stochastic_lqr_benchmark.py",
+        "quick_stats": {
+          "total_cases": 10,
+          "dimension_range": "1D-10D",
+          "point_types": [
+            "Grid",
+            "Random"
+          ],
+          "parameter_count": 5
+        },
+        "test_cases": [
+          {
+            "case_id": 1,
+            "dimension": 1,
+            "parameters": {
+              "nx": 100,
+              "domain_type": "grid",
+              "sigma": 0.1
+            },
+            "point_type": "Grid",
+            "point_details": "100 grid points",
+            "physics_regime": "Low Noise",
+            "description": "1D SLQR, \u03c3=0.1 (grid)"
+          },
+          {
+            "case_id": 2,
+            "dimension": 2,
+            "parameters": {
+              "nx": 50,
+              "ny": 50,
+              "domain_type": "grid",
+              "sigma": 0.1
+            },
+            "point_type": "Grid",
+            "point_details": "50\u00d750 grid",
+            "physics_regime": "Low Noise",
+            "description": "2D SLQR, \u03c3=0.1 (grid)"
+          },
+          {
+            "case_id": 3,
+            "dimension": 3,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points",
+              "sigma": 0.1
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Low Noise",
+            "description": "3D SLQR, \u03c3=0.1 (random points)"
+          },
+          {
+            "case_id": 4,
+            "dimension": 5,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points",
+              "sigma": 0.1
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Low Noise",
+            "description": "5D SLQR, \u03c3=0.1 (random points)"
+          },
+          {
+            "case_id": 5,
+            "dimension": 10,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points",
+              "sigma": 0.1
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Low Noise",
+            "description": "10D SLQR, \u03c3=0.1 (random points)"
+          },
+          {
+            "case_id": 6,
+            "dimension": 1,
+            "parameters": {
+              "nx": 100,
+              "domain_type": "grid",
+              "sigma": 0.5
+            },
+            "point_type": "Grid",
+            "point_details": "100 grid points",
+            "physics_regime": "Moderate Noise",
+            "description": "1D SLQR, \u03c3=0.5 (grid)"
+          },
+          {
+            "case_id": 7,
+            "dimension": 2,
+            "parameters": {
+              "nx": 50,
+              "ny": 50,
+              "domain_type": "grid",
+              "sigma": 0.5
+            },
+            "point_type": "Grid",
+            "point_details": "50\u00d750 grid",
+            "physics_regime": "Moderate Noise",
+            "description": "2D SLQR, \u03c3=0.5 (grid)"
+          },
+          {
+            "case_id": 8,
+            "dimension": 3,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points",
+              "sigma": 0.5
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Moderate Noise",
+            "description": "3D SLQR, \u03c3=0.5 (random points)"
+          },
+          {
+            "case_id": 9,
+            "dimension": 5,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points",
+              "sigma": 0.5
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Moderate Noise",
+            "description": "5D SLQR, \u03c3=0.5 (random points)"
+          },
+          {
+            "case_id": 10,
+            "dimension": 10,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points",
+              "sigma": 0.5
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Moderate Noise",
+            "description": "10D SLQR, \u03c3=0.5 (random points)"
+          }
+        ],
+        "parameter_variations": {
+          "dimensions": [
+            1,
+            2,
+            3,
+            5,
+            10
+          ],
+          "grid_dimensions": [
+            1,
+            2
+          ],
+          "random_dimensions": [
+            3,
+            5,
+            10
+          ],
+          "nx": [
+            100,
+            50
+          ],
+          "domain_type": [
+            "grid",
+            "points"
+          ],
+          "sigma": [
+            0.1,
+            0.5
+          ],
+          "ny": [
+            50
+          ],
+          "n_points": [
+            1000
+          ]
+        },
+        "testing_aspects": {
+          "dimensional_scaling": "Tests solver scalability from 1D to 10D",
+          "noise_sensitivity": "Tests behavior across noise levels \u03c3 \u2208 [0.1, 0.5]",
+          "analytical_reference": "Exact solution \u03c6(x,\u03c4) = \u00bd|x|\u00b2/(1+\u03c4) + \u00bd\u03c3\u00b2d\u00b7ln(1+\u03c4)"
+        },
+        "download_url": "/download/SOC/Stochastic_LQR/stochastic_lqr_benchmark.py"
+      }
+    ],
+    "OC": [
+      {
+        "name": "Linear Quadratic Regulator (LQR)",
+        "category": "OC",
+        "short_description": "HJB equation for the free-particle LQR problem with quadratic terminal cost",
+        "equation": "\u2202\u03c6/\u2202\u03c4 + \u00bd|\u2207\u03c6|\u00b2 = 0",
+        "initial_condition": "\u03c6(x, 0) = \u00bd|x|\u00b2  (quadratic terminal cost)",
+        "file_path": "lqr_benchmark.py",
+        "quick_stats": {
+          "total_cases": 5,
+          "dimension_range": "1D-10D",
+          "point_types": [
+            "Grid",
+            "Random"
+          ],
+          "parameter_count": 4
+        },
+        "test_cases": [
+          {
+            "case_id": 1,
+            "dimension": 1,
+            "parameters": {
+              "nx": 100,
+              "domain_type": "grid"
+            },
+            "point_type": "Grid",
+            "point_details": "100 grid points",
+            "physics_regime": "Deterministic",
+            "description": "1D LQR value function (grid)"
+          },
+          {
+            "case_id": 2,
+            "dimension": 2,
+            "parameters": {
+              "nx": 50,
+              "ny": 50,
+              "domain_type": "grid"
+            },
+            "point_type": "Grid",
+            "point_details": "50\u00d750 grid",
+            "physics_regime": "Deterministic",
+            "description": "2D LQR value function (grid)"
+          },
+          {
+            "case_id": 3,
+            "dimension": 3,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points"
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Deterministic",
+            "description": "3D LQR value function (random points)"
+          },
+          {
+            "case_id": 4,
+            "dimension": 5,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points"
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Deterministic",
+            "description": "5D LQR value function (random points)"
+          },
+          {
+            "case_id": 5,
+            "dimension": 10,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points"
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Deterministic",
+            "description": "10D LQR value function (random points)"
+          }
+        ],
+        "parameter_variations": {
+          "dimensions": [
+            1,
+            2,
+            3,
+            5,
+            10
+          ],
+          "grid_dimensions": [
+            1,
+            2
+          ],
+          "random_dimensions": [
+            3,
+            5,
+            10
+          ],
+          "nx": [
+            100,
+            50
+          ],
+          "domain_type": [
+            "grid",
+            "points"
+          ],
+          "ny": [
+            50
+          ],
+          "n_points": [
+            1000
+          ]
+        },
+        "testing_aspects": {
+          "dimensional_scaling": "Tests solver scalability from 1D to 10D",
+          "analytical_reference": "Exact value function \u03c6(x,\u03c4) = \u00bd|x|\u00b2/(1+\u03c4)",
+          "quadratic_ic": "Tests handling of quadratic initial conditions"
+        },
+        "download_url": "/download/OC/LQR/lqr_benchmark.py"
+      }
+    ],
     "HJB": [
       {
         "name": "Burgers Equation",
@@ -13,7 +464,7 @@
         "short_description": "Viscous Burgers' equation modeling nonlinear convection-diffusion",
         "equation": "\u2202u/\u2202t + u \u2202u/\u2202x = \u03bd \u2202\u00b2u/\u2202x\u00b2",
         "initial_condition": "u(x,0) = -sin(\u03c0x)",
-        "file_path": "HJB/HJB_wholedomain/burgers_benchmark.py",
+        "file_path": "burgers_benchmark.py",
         "quick_stats": {
           "total_cases": 10,
           "dimension_range": "1D-10D",
@@ -183,7 +634,126 @@
           "dimensional_scaling": "Tests solver performance from 1D to 10D",
           "physics_regimes": "Tests both inviscid and viscous regimes"
         },
-        "download_url": "/benchmarks/HJB/HJB_wholedomain/burgers_benchmark.py"
+        "download_url": "/download/HJB/HJB_wholedomain/burgers_benchmark.py"
+      }
+    ],
+    "OT": [
+      {
+        "name": "Wasserstein-2 Gaussian Transport",
+        "category": "OT",
+        "short_description": "L2 optimal transport between Gaussian distributions via the Benamou-Brenier formulation",
+        "equation": "\u2202\u03c6/\u2202t + \u00bd|\u2207\u03c6|\u00b2 = 0",
+        "initial_condition": "\u03c6(x,0) = (\u03bc\u2081-\u03bc\u2080)\u00b7x",
+        "file_path": "w2_gaussian_benchmark.py",
+        "quick_stats": {
+          "total_cases": 5,
+          "dimension_range": "1D-10D",
+          "point_types": [
+            "Grid",
+            "Random"
+          ],
+          "parameter_count": 4
+        },
+        "test_cases": [
+          {
+            "case_id": 1,
+            "dimension": 1,
+            "parameters": {
+              "nx": 100,
+              "domain_type": "grid"
+            },
+            "point_type": "Grid",
+            "point_details": "100 grid points",
+            "physics_regime": "Optimal Transport",
+            "description": "1D Gaussian transport (grid)"
+          },
+          {
+            "case_id": 2,
+            "dimension": 2,
+            "parameters": {
+              "nx": 50,
+              "ny": 50,
+              "domain_type": "grid"
+            },
+            "point_type": "Grid",
+            "point_details": "50\u00d750 grid",
+            "physics_regime": "Optimal Transport",
+            "description": "2D Gaussian transport (grid)"
+          },
+          {
+            "case_id": 3,
+            "dimension": 3,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points"
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Optimal Transport",
+            "description": "3D Gaussian transport (random points)"
+          },
+          {
+            "case_id": 4,
+            "dimension": 5,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points"
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Optimal Transport",
+            "description": "5D Gaussian transport (random points)"
+          },
+          {
+            "case_id": 5,
+            "dimension": 10,
+            "parameters": {
+              "n_points": 1000,
+              "domain_type": "points"
+            },
+            "point_type": "Random",
+            "point_details": "1000 random points",
+            "physics_regime": "Optimal Transport",
+            "description": "10D Gaussian transport (random points)"
+          }
+        ],
+        "parameter_variations": {
+          "dimensions": [
+            1,
+            2,
+            3,
+            5,
+            10
+          ],
+          "grid_dimensions": [
+            1,
+            2
+          ],
+          "random_dimensions": [
+            3,
+            5,
+            10
+          ],
+          "nx": [
+            100,
+            50
+          ],
+          "domain_type": [
+            "grid",
+            "points"
+          ],
+          "ny": [
+            50
+          ],
+          "n_points": [
+            1000
+          ]
+        },
+        "testing_aspects": {
+          "dimensional_scaling": "Tests solver scalability from 1D to 10D",
+          "analytical_reference": "Exact Kantorovich potential available for Gaussian-to-Gaussian transport"
+        },
+        "download_url": "/download/OT/W2_Gaussian/w2_gaussian_benchmark.py"
       }
     ]
   }

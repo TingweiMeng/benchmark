@@ -10,14 +10,29 @@
     <div id="header"></div>
     <main>
         <section>
-            <h2>Submit Your Work</h2>
-            <p>Use this form to submit your results, GitHub link, or code files for evaluation. Follow the <a href="user_guide.html">User Guide</a> for detailed instructions on how to use the benchmarks and submit your results.</p>
+            <h2>Submit Your Solution</h2>
+            <p>Submit your solver results for an existing benchmark. Follow the <a href="user_guide.html">User Guide</a> for detailed instructions.</p>
             <form id="submission-form">
+                <label for="solution-category">Benchmark Category:</label>
+                <select id="solution-category" name="solution-category" onchange="loadBenchmarkNames()">
+                    <option value="">-- Select Category --</option>
+                    <option value="HJB">HJB (Hamilton-Jacobi-Bellman)</option>
+                    <option value="OT">OT (Optimal Transport)</option>
+                    <option value="OC">OC (Optimal Control)</option>
+                    <option value="SOC">SOC (Stochastic Optimal Control)</option>
+                    <option value="WGF">WGF (Wasserstein Gradient Flow)</option>
+                </select>
+
+                <label for="solution-benchmark">Benchmark:</label>
+                <select id="solution-benchmark" name="solution-benchmark">
+                    <option value="">-- Select Category First --</option>
+                </select>
+
                 <label for="submission-type">Submission Type:</label>
                 <select id="submission-type" name="submission-type" onchange="toggleSubmissionFields()">
-                    <option value="results">Results</option>
+                    <option value="results">Results (CSV)</option>
                     <option value="github">GitHub Link</option>
-                    <option value="code">Code Files</option>
+                    <option value="code">Code Files (ZIP)</option>
                 </select>
 
                 <div id="results-field" class="submission-field">
@@ -25,9 +40,9 @@
                     <input type="file" id="results-file" name="results-file" accept=".csv">
                 </div>
 
-                <div id="github-field" class="submission-field" style="display: none;">
-                    <label for="github-link">GitHub Repository Link:</label>
-                    <input type="url" id="github-link" name="github-link" placeholder="https://github.com/your-repo">
+                <div id="solution-github-field" class="submission-field" style="display: none;">
+                    <label for="solution-github-link">GitHub Repository Link:</label>
+                    <input type="url" id="solution-github-link" name="solution-github-link" placeholder="https://github.com/your-repo">
                 </div>
 
                 <div id="code-field" class="submission-field" style="display: none;">
@@ -35,11 +50,22 @@
                     <input type="file" id="code-files" name="code-files" accept=".zip">
                 </div>
 
-                <button type="submit">Submit</button>
+                <button type="submit">Submit Solution</button>
             </form>
 
             <h2>Submit a New Benchmark</h2>
+            <p>Propose a new benchmark problem for inclusion in the platform.</p>
             <form id="benchmark-form">
+                <label for="benchmark-category">Category:</label>
+                <select id="benchmark-category" name="benchmark-category" required>
+                    <option value="">-- Select Category --</option>
+                    <option value="HJB">HJB (Hamilton-Jacobi-Bellman)</option>
+                    <option value="OT">OT (Optimal Transport)</option>
+                    <option value="OC">OC (Optimal Control)</option>
+                    <option value="SOC">SOC (Stochastic Optimal Control)</option>
+                    <option value="WGF">WGF (Wasserstein Gradient Flow)</option>
+                </select>
+
                 <label for="benchmark-name">Benchmark Name:</label>
                 <input type="text" id="benchmark-name" name="benchmark-name" placeholder="Enter benchmark name" required>
 
@@ -49,15 +75,15 @@
                 <label for="benchmark-type">Submission Type:</label>
                 <select id="benchmark-type" name="benchmark-type" onchange="toggleBenchmarkFields()">
                     <option value="github">GitHub Link</option>
-                    <option value="file">Upload Files</option>
+                    <option value="file">Upload Files (ZIP)</option>
                 </select>
 
-                <div id="github-field" class="benchmark-field">
-                    <label for="github-link">GitHub Repository Link:</label>
-                    <input type="url" id="github-link" name="github-link" placeholder="https://github.com/your-repo">
+                <div id="benchmark-github-field" class="benchmark-field">
+                    <label for="benchmark-github-link">GitHub Repository Link:</label>
+                    <input type="url" id="benchmark-github-link" name="benchmark-github-link" placeholder="https://github.com/your-repo">
                 </div>
 
-                <div id="file-field" class="benchmark-field" style="display: none;">
+                <div id="benchmark-file-field" class="benchmark-field" style="display: none;">
                     <label for="benchmark-files">Upload Files (ZIP):</label>
                     <input type="file" id="benchmark-files" name="benchmark-files" accept=".zip">
                 </div>
